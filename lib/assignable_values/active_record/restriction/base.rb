@@ -29,20 +29,11 @@ module AssignableValues
         end
 
         def assignable_values(record)
-          restriction = self
           assignable_values = []
-          old_value = record.send("#{property}_was")
+          old_value = previously_saved_value(record)
           assignable_values << old_value if old_value.present?
           assignable_values |= raw_assignable_values(record)
-          assignable_values = assignable_values.collect do |value|
-            if value.is_a?(String)
-              value = value.dup
-              value.singleton_class.send(:define_method, :human) do
-                restriction.humanize_string_value(value)
-              end
-            end
-            value
-          end
+          assignable_values = decorate_values(assignable_values)
           assignable_values
         end
 
@@ -60,6 +51,14 @@ module AssignableValues
         end
 
         private
+
+        def previously_saved_value(record)
+          nil
+        end
+
+        def decorate_values(values)
+          values
+        end
 
         def delegate_method
           options[:through]
