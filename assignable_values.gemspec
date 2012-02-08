@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.authors = ["Henning Koch"]
   s.email = 'henning.koch@makandra.de'
   s.homepage = 'https://github.com/makandra/assignable_values'
-  s.summary = 'Restrict the values assignable to ActiveRecord attributes or associations.'
+  s.summary = 'Restrict the values assignable to ActiveRecord attributes or associations. Or enums on steroids.'
   s.description = s.summary
 
   s.files         = `git ls-files`.split("\n")
