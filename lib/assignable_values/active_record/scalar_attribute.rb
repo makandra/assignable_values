@@ -48,7 +48,6 @@ module AssignableValues
           end
         end
         validate validate_method
-
       end
 
       def humanize_scalar_attribute_value(attribute, value)

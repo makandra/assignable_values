@@ -39,14 +39,13 @@ module AssignableValues
 
     def setup_values_delegate(property, delegate_method)
       assignable_values_from_delegate_method = "assignable_#{property.to_s.pluralize}_from_#{delegate_method}"
-      p assignable_values_from_delegate_method
       define_method assignable_values_from_delegate_method do
         delegate = send(delegate_method) or raise DelegateUnavailable, "Cannot query a nil #{delegate_method} for assignable values"
         delegate_query_method = "assignable_#{self.class.name.underscore}_#{property.to_s.pluralize}"
         args = delegate.method(delegate_query_method).arity == 1 ? [self] : []
         delegate.send(delegate_query_method, *args)
       end
-      method(assignable_values_from_delegate_method)
+      lambda { send(assignable_values_from_delegate_method) }
     end
 
   end
