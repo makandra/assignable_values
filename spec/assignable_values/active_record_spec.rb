@@ -201,9 +201,7 @@ describe AssignableValues::ActiveRecord do
         record.valid?
       end
 
-      it 'should not uncache a fresh association before validating' do
-
-      end
+      it 'should not uncache a fresh association before validating'
 
       context 'when delegating using the :through option' do
 
