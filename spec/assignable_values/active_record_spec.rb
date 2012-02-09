@@ -40,6 +40,8 @@ describe AssignableValues::ActiveRecord do
           @klass.new(:genre => 'disallowed value').should_not be_valid
         end
 
+        it 'should use the same error message as validates_inclusion_of'
+
         it 'should not allow nil for the attribute value' do
           @klass.new(:genre => nil).should_not be_valid
         end
@@ -149,7 +151,7 @@ describe AssignableValues::ActiveRecord do
 
       it 'should allow a nil association if the :allow_blank option is set' do
         @klass = disposable_song_class do
-          assignable_values_for :artist do
+          assignable_values_for :artist, :allow_blank => true do
             []
           end
         end
@@ -162,7 +164,7 @@ describe AssignableValues::ActiveRecord do
         allowed_association = Artist.create!
         disallowed_association = Artist.create!
         @klass = disposable_song_class
-        record = @klass.create!(:artist => disallowed_assocation)
+        record = @klass.create!(:artist => disallowed_association)
         @klass.class_eval do
           assignable_values_for :artist do
             [allowed_association]
@@ -171,19 +173,36 @@ describe AssignableValues::ActiveRecord do
         record.should be_valid
       end
 
-      it 'should not check a cached value against the list of assignable associations' do
+      it 'should not fail or allow nil if a previously saved association no longer exists in the database' do
         allowed_association = Artist.create!
-        disallowed_association = Artist.create!
-        @klass = disposable_song_class do
+        disposable_song_class.class_eval do
           assignable_values_for :artist do
             [allowed_association]
           end
         end
-        record = @klass.create!(:artist => allowed_association)
-        record.artist
-        record.artist_id = disallowed_association.id
+        record = @klass.new
+        record.stub :artist_id_was => -1
         record.should_not be_valid
-        raise 'works differently in rails 3'
+      end
+
+      it "should not load a previously saved association if the association's foreign key hasn't changed"
+
+      it 'should uncache a stale association before validating' do
+        @klass = disposable_song_class do
+          assignable_values_for :artist do
+            []
+          end
+        end
+        association = Artist.create!
+        record = @klass.new
+        record.stub(:artist => association, :artist_id => -1)
+        record.should_receive(:artist).ordered.and_return(association)
+        record.should_receive(:artist).ordered.with(true).and_return(association)
+        record.valid?
+      end
+
+      it 'should not uncache a fresh association before validating' do
+
       end
 
       context 'when delegating using the :through option' do

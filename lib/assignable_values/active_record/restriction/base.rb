@@ -17,7 +17,7 @@ module AssignableValues
         end
 
         def validate_record(record)
-          value = record.send(property)
+          value = current_value(record)
           unless allow_blank? && value.blank?
             begin
               assignable_values = assignable_values(record)
@@ -51,6 +51,10 @@ module AssignableValues
         end
 
         private
+
+        def current_value(record)
+          record.send(property)
+        end
 
         def previously_saved_value(record)
           nil

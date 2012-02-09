@@ -13,13 +13,19 @@ module AssignableValues
           "#{property}_id"
         end
 
-        def association_id
-          send(association_id_method)
+        def association_id(record)
+          record.send(association_id_method)
         end
 
         def previously_saved_value(record)
           old_id = record.send("#{association_id_method}_was")
-          association_class.find(old_id) if old_id
+          association_class.find_by_id(old_id) if old_id
+        end
+
+        def current_value(record)
+          value = record.send(property)
+          value = record.send(property, true) if (value && value.id) != association_id(record)
+          value
         end
 
       end
