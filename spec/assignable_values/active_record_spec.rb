@@ -160,15 +160,15 @@ describe AssignableValues::ActiveRecord do
 
       it 'should allow a previously saved association even if that association is no longer allowed' do
         allowed_association = Artist.create!
-        disallowed_associtaion = Artist.create!
+        disallowed_association = Artist.create!
         @klass = disposable_song_class
-        record = @klass.create!(:artist => disallowed_associtaion)
+        record = @klass.create!(:artist => disallowed_assocation)
         @klass.class_eval do
           assignable_values_for :artist do
             [allowed_association]
           end
         end
-        @klass.new(:artist => disallowed_association).should be_valid
+        record.should be_valid
       end
 
       it 'should not check a cached value against the list of assignable associations' do
@@ -180,8 +180,10 @@ describe AssignableValues::ActiveRecord do
           end
         end
         record = @klass.create!(:artist => allowed_association)
+        record.artist
         record.artist_id = disallowed_association.id
         record.should_not be_valid
+        raise 'works differently in rails 3'
       end
 
       context 'when delegating using the :through option' do
