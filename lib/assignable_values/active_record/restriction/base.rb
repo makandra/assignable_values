@@ -21,7 +21,7 @@ module AssignableValues
           unless allow_blank? && value.blank?
             begin
               assignable_values = assignable_values(record)
-              assignable_values.include?(value) or record.errors.add(property, I18n.t('disallowed_value'))
+              assignable_values.include?(value) or record.errors.add(property, I18n.t('errors.messages.inclusion'))
             rescue DelegateUnavailable
               # if the delegate is unavailable, the validation is skipped
             end

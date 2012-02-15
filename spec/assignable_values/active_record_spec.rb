@@ -40,7 +40,12 @@ describe AssignableValues::ActiveRecord do
           @klass.new(:genre => 'disallowed value').should_not be_valid
         end
 
-        it 'should use the same error message as validates_inclusion_of'
+        it 'should use the same error message as validates_inclusion_of' do
+          record = @klass.new(:genre => 'disallowed value')
+          record.valid?
+          record.errors[:genre].first.should == I18n.t('errors.messages.inclusion')
+          record.errors[:genre].first.should == 'is not included in the list'
+        end
 
         it 'should not allow nil for the attribute value' do
           @klass.new(:genre => nil).should_not be_valid
@@ -271,6 +276,17 @@ describe AssignableValues::ActiveRecord do
           end
         end
         @klass.new.assignable_genres.should == %w[pop rock]
+      end
+
+      it 'should include a previously saved value, even if is no longer allowed' do
+        @klass = disposable_song_class do
+          assignable_values_for :genre do
+            %w[pop rock]
+          end
+        end
+        record = @klass.new(:genre => 'ballad')
+        record.save!(:validate => false)
+        record.assignable_genres.should =~ %w[pop rock ballad]
       end
 
       context 'with :through option' do
