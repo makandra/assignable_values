@@ -79,65 +79,6 @@ describe AssignableValues::ActiveRecord do
 
       end
 
-      context 'when delegating using the :through option' do
-
-        it 'should obtain allowed values from a method with the given name' do
-          @klass = disposable_song_class do
-            assignable_values_for :genre, :through => :delegate
-            def delegate
-              OpenStruct.new(:assignable_song_genres => %w[pop rock])
-            end
-          end
-          @klass.new(:genre => 'pop').should be_valid
-          @klass.new(:genre => 'disallowed value').should_not be_valid
-        end
-
-        it 'should skip the validation if that method returns nil' do
-          @klass = disposable_song_class do
-            assignable_values_for :genre, :through => :delegate
-            def delegate
-              nil
-            end
-          end
-          @klass.new(:genre => 'pop').should be_valid
-        end
-
-      end
-
-      context 'with :default option' do
-
-        it 'should allow to set a default' do
-          @klass = disposable_song_class do
-            assignable_values_for :genre, :default => 'pop' do
-              %w[pop rock]
-            end
-          end
-          @klass.new.genre.should == 'pop'
-        end
-
-        it 'should allow to set a default through a lambda' do
-          @klass = disposable_song_class do
-            assignable_values_for :genre, :default => lambda { 'pop' } do
-              %w[pop rock]
-            end
-          end
-          @klass.new.genre.should == 'pop'
-        end
-
-        it 'should evaluate a lambda default in the context of the record instance' do
-          @klass = disposable_song_class do
-            assignable_values_for :genre, :default => lambda { default_genre } do
-              %w[pop rock]
-            end
-            def default_genre
-              'pop'
-            end
-          end
-          @klass.new.genre.should == 'pop'
-        end
-
-      end
-
     end
 
     context 'when validating belongs_to associations' do
@@ -178,6 +119,18 @@ describe AssignableValues::ActiveRecord do
         record.should be_valid
       end
 
+      it "should not load a previously saved association if the association's foreign key hasn't changed" do
+        association = Artist.create!
+        @klass = disposable_song_class do
+          assignable_values_for :artist do
+            [association] # This example doesn't care about what's assignable. We're only interested in behavior up to the validation.
+          end
+        end
+        record = @klass.create!(:artist => association)
+        Artist.should_not_receive(:find_by_id)
+        record.valid?
+      end
+
       it 'should not fail or allow nil if a previously saved association no longer exists in the database' do
         allowed_association = Artist.create!
         disposable_song_class.class_eval do
@@ -190,29 +143,90 @@ describe AssignableValues::ActiveRecord do
         record.should_not be_valid
       end
 
-      it "should not load a previously saved association if the association's foreign key hasn't changed"
-
       it 'should uncache a stale association before validating' do
         @klass = disposable_song_class do
           assignable_values_for :artist do
-            []
+            [] # This example doesn't care about what's assignable. We're only interested in behavior up to the validation.
           end
         end
         association = Artist.create!
         record = @klass.new
-        record.stub(:artist => association, :artist_id => -1)
+        record.stub(:artist => association, :artist_id => -1) # This is a stale association: The associated object's id doesn't match the foreign key. This can happen in Rails 2, not Rails 3.
         record.should_receive(:artist).ordered.and_return(association)
         record.should_receive(:artist).ordered.with(true).and_return(association)
         record.valid?
       end
 
-      it 'should not uncache a fresh association before validating'
+      it 'should not uncache a fresh association before validating' do
+        @klass = disposable_song_class do
+          assignable_values_for :artist do
+            [] # This example doesn't care about what's assignable. We're only interested in behavior up to the validation.
+          end
+        end
+        association = Artist.create!
+        record = @klass.new
+        record.stub(:artist => association, :artist_id => association.id) # This is a fresh association: The associated object's id matches the foreign key.
+        record.should_receive(:artist).once.and_return(association)
+        record.valid?
+      end
 
-      context 'when delegating using the :through option' do
+    end
 
-        it 'should obtain allowed values from a method with the given name'
+    context 'when delegating using the :through option' do
 
-        it 'should skip the validation if that method returns nil'
+      it 'should obtain allowed values from a method with the given name' do
+        @klass = disposable_song_class do
+          assignable_values_for :genre, :through => :delegate
+          def delegate
+            OpenStruct.new(:assignable_song_genres => %w[pop rock])
+          end
+        end
+        @klass.new(:genre => 'pop').should be_valid
+        @klass.new(:genre => 'disallowed value').should_not be_valid
+      end
+
+      it 'should skip the validation if that method returns nil' do
+        @klass = disposable_song_class do
+          assignable_values_for :genre, :through => :delegate
+          def delegate
+            nil
+          end
+        end
+        @klass.new(:genre => 'pop').should be_valid
+      end
+
+    end
+
+    context 'with :default option' do
+
+      it 'should allow to set a default' do
+        @klass = disposable_song_class do
+          assignable_values_for :genre, :default => 'pop' do
+            %w[pop rock]
+          end
+        end
+        @klass.new.genre.should == 'pop'
+      end
+
+      it 'should allow to set a default through a lambda' do
+        @klass = disposable_song_class do
+          assignable_values_for :genre, :default => lambda { 'pop' } do
+            %w[pop rock]
+          end
+        end
+        @klass.new.genre.should == 'pop'
+      end
+
+      it 'should evaluate a lambda default in the context of the record instance' do
+        @klass = disposable_song_class do
+          assignable_values_for :genre, :default => lambda { default_genre } do
+            %w[pop rock]
+          end
+          def default_genre
+            'pop'
+          end
+        end
+        @klass.new.genre.should == 'pop'
       end
 
     end

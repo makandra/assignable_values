@@ -18,6 +18,8 @@ Text here.
 
 ### No caching
 
+## Defining default values
+
 ## Obtaining assignable values from a delegate
 
 Text here.
