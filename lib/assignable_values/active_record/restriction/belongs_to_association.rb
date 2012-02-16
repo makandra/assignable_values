@@ -18,9 +18,13 @@ module AssignableValues
         end
 
         def previously_saved_value(record)
-          id_changed = record.send("#{association_id_method}_changed?")
-          old_id = record.send("#{association_id_method}_was")
-          association_class.find_by_id(old_id) if id_changed && old_id
+          if old_id = record.send("#{association_id_method}_was")
+            if old_id == association_id(record)
+              current_value(record) # no need to query the database if nothing changed
+            else
+              association_class.find_by_id(old_id)
+            end
+          end
         end
 
         def current_value(record)
@@ -33,3 +37,5 @@ module AssignableValues
     end
   end
 end
+
+

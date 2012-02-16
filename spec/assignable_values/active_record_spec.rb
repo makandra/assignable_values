@@ -166,7 +166,7 @@ describe AssignableValues::ActiveRecord do
         association = Artist.create!
         record = @klass.new
         record.stub(:artist => association, :artist_id => association.id) # This is a fresh association: The associated object's id matches the foreign key.
-        record.should_receive(:artist).once.and_return(association)
+        record.should_receive(:artist).with(no_args).and_return(association)
         record.valid?
       end
 
