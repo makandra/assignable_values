@@ -4,6 +4,7 @@ class CreateSongs < ActiveRecord::Migration
     create_table :songs do |t|
       t.integer :artist_id
       t.string :genre
+      t.integer :year
     end
   end
 
