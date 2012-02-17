@@ -1,14 +1,33 @@
 # assignable_values - Enums on vitamins
 
-`assignable_values` is an ActiveRecord macro to restrict the values assignable to attributes or associations. Think of it as enums, but infinitely more flexible and with many features useful for web forms.
+`assignable_values` lets you restrict the values that can be assigned to attributes or associations of ActiveRecord models. You can think of it as enums where the list of allowed values is generated at runtime and the value is checked during validation.
 
-## Restricting scalar attributes
+We carefully enhanced the cure enum functionality with small tweaks that are useful for web forms, internationalized applications and common authorization patterns.
 
-These are strings, integers, etc.
+## Restricting attributes
 
-Text here.
+The basic usage to restrict the values assignable to strings, integers, etc. is this:
+
+    class Song < ActiveRecord::Base
+      assignable_values_for :genre do
+        ['pop', 'rock', 'electronic']
+      end
+    end
+
+The assigned value is checked during validation:
+
+    Song.new(:genre => 'rock').valid? # true
+    Song.new(:genre => 'elephant').valid? # false
+
+The validation error message is the same as the one from `validates_inclusion_of` (`errors.messages.inclusion` in your `locale.yml`).
+
+### Runtime
+
+The list of assignable values is generated at runtime.
 
 ### Obtaining lists
+
+
 
 ### Human labels
 
