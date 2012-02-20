@@ -64,10 +64,6 @@ module AssignableValues
           values
         end
 
-        def delegate_method
-          options[:through]
-        end
-
         def delegate?
           @options.has_key?(:through)
         end
@@ -78,6 +74,10 @@ module AssignableValues
 
         def allow_blank?
           @options[:allow_blank]
+        end
+
+        def delegate_definition
+          options[:through]
         end
 
         def enhance_model(&block)
@@ -125,8 +125,17 @@ module AssignableValues
           end.to_a
         end
 
+        def delegate(record)
+          case delegate_definition
+          when Symbol then record.send(delegate_definition)
+          when Proc then record.instance_eval(&delegate_definition)
+          else raise "Illegal delegate definition: #{delegate_definition.inspect}"
+          end
+        end
+
         def assignable_values_from_delegate(record)
-          delegate = record.send(delegate_method) or raise DelegateUnavailable, "Cannot query a nil #{delegate_method} for assignable values"
+          delegate = delegate(record)
+          delegate.present? or raise DelegateUnavailable, "Cannot query a nil delegate for assignable values"
           delegate_query_method = "assignable_#{model.name.underscore}_#{property.to_s.pluralize}"
           args = delegate.method(delegate_query_method).arity == 1 ? [record] : []
           delegate.send(delegate_query_method, *args)

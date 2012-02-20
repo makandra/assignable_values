@@ -185,6 +185,17 @@ describe AssignableValues::ActiveRecord do
         @klass.new(:genre => 'disallowed value').should_not be_valid
       end
 
+      it 'should be able to delegate to a lambda, which is evaluated in the context of the record instance' do
+        @klass = disposable_song_class do
+          assignable_values_for :genre, :through => lambda { delegate }
+          def delegate
+            OpenStruct.new(:assignable_song_genres => %w[pop rock])
+          end
+        end
+        @klass.new(:genre => 'pop').should be_valid
+        @klass.new(:genre => 'disallowed value').should_not be_valid
+      end
+
       it 'should skip the validation if that method returns nil' do
         @klass = disposable_song_class do
           assignable_values_for :genre, :through => :delegate
