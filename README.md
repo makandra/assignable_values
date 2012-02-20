@@ -48,7 +48,7 @@ This is useful for populating &lt;select&gt; tags in web forms:
 
     form.select :genre, form.object.assignable_genres
 
-### Human labels
+### Humanized labels
 
 You will often want to present internal values in a humanized form. E.g. `"pop"` should be presented as `"Pop music"`.
 
@@ -64,12 +64,12 @@ You can define human labels in your I18n dictionary:
             
 When obtaining a list of assignable values, each value will have a method `#human` that returns the translation:
 
-    song.assignable_genres.first       # => 'pop'
-    song.assignable_genres.first.human # => 'Pop music'
+    song.assignable_genres.first           # => 'pop'
+    song.assignable_genres.first.humanized # => 'Pop music'
 
 You can populate a &lt;select&gt; tag with pairs of internal values and human labels like this:
 
-    form.collection_select :genre, form.object.assignable_genres, :to_s, :human
+    form.collection_select :genre, form.object.assignable_genres, :to_s, :humanized
 
 ## Restricting belongs_to associations
 

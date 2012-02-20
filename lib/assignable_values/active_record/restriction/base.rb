@@ -46,10 +46,6 @@ module AssignableValues
           true
         end
 
-        def humanize_string_value(value)
-          I18n.t("assignable_values.#{model.name.underscore}.#{property}.#{value}", :default => value.humanize)
-        end
-
         private
 
         def current_value(record)

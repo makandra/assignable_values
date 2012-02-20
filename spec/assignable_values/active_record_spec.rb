@@ -57,6 +57,19 @@ describe AssignableValues::ActiveRecord do
           song.should be_valid
         end
 
+        it 'should generate a method returning the humanized value' do
+          song = @klass.new(:genre => 'pop')
+          song.humanized_genre.should == 'Pop music'
+        end
+
+        it 'should generate a method returning the humanized value, which is nil when the value is blank' do
+          song = @klass.new
+          song.genre = nil
+          song.humanized_genre.should be_nil
+          song.genre = ''
+          song.humanized_genre.should be_nil
+        end
+
       end
 
       context 'if the :allow_blank option is set' do
@@ -253,13 +266,13 @@ describe AssignableValues::ActiveRecord do
         @klass.new.assignable_genres.should == %w[pop rock]
       end
 
-      it "should define a method #human on strings in that list, which return up the value's' translation" do
+      it "should define a method #humanized on strings in that list, which return up the value's' translation" do
         @klass = disposable_song_class do
           assignable_values_for :genre do
             %w[pop rock]
           end
         end
-        @klass.new.assignable_genres.collect(&:human).should == ['Pop music', 'Rock music']
+        @klass.new.assignable_genres.collect(&:humanized).should == ['Pop music', 'Rock music']
       end
 
       it 'should use String#humanize as a default translation' do
@@ -268,10 +281,10 @@ describe AssignableValues::ActiveRecord do
             %w[electronic]
           end
         end
-        @klass.new.assignable_genres.collect(&:human).should == ['Electronic']
+        @klass.new.assignable_genres.collect(&:humanized).should == ['Electronic']
       end
 
-      it 'should not define a method #human on values that are not strings' do
+      it 'should not define a method #humanized on values that are not strings' do
         @klass = disposable_song_class do
           assignable_values_for :year do
             [1999, 2000, 2001]
@@ -279,7 +292,7 @@ describe AssignableValues::ActiveRecord do
         end
         years = @klass.new.assignable_years
         years.should == [1999, 2000, 2001]
-        years.first.should_not respond_to(:human)
+        years.first.should_not respond_to(:humanized)
       end
 
       it 'should call #to_a on the list of assignable values, allowing ranges and scopes to be passed as allowed value descriptors' do
