@@ -361,25 +361,25 @@ describe AssignableValues::ActiveRecord do
 
   end
 
-  describe '.authorize_values_for' do
-
-    it 'should be a shortcut for .assignable_values_for :attribute, :through => :power' do
-      @klass = disposable_song_class
-      @klass.should_receive(:assignable_values_for).with(:attribute, :option => 'option', :through => :power)
-      @klass.class_eval do
-        authorize_values_for :attribute, :option => 'option'
-      end
-    end
-
-    it 'should generate a getter and setter for a @power field' do
-      @klass = disposable_song_class do
-        authorize_values_for :attribute
-      end
-      song = @klass.new
-      song.should respond_to(:power)
-      song.should respond_to(:power=)
-    end
-
-  end
+  #describe '.authorize_values_for' do
+  #
+  #  it 'should be a shortcut for .assignable_values_for :attribute, :through => :power' do
+  #    @klass = disposable_song_class
+  #    @klass.should_receive(:assignable_values_for).with(:attribute, :option => 'option', :through => :power)
+  #    @klass.class_eval do
+  #      authorize_values_for :attribute, :option => 'option'
+  #    end
+  #  end
+  #
+  #  it 'should generate a getter and setter for a @power field' do
+  #    @klass = disposable_song_class do
+  #      authorize_values_for :attribute
+  #    end
+  #    song = @klass.new
+  #    song.should respond_to(:power)
+  #    song.should respond_to(:power=)
+  #  end
+  #
+  #end
 
 end

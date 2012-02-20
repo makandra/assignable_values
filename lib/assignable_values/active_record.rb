@@ -8,10 +8,10 @@ module AssignableValues
       restriction_type.new(self, property, options, &values)
     end
 
-    def authorize_values_for(property, options = {})
-      method_defined?(:power) or attr_accessor :power
-      assignable_values_for property, options.merge(:through => :power)
-    end
+    #def authorize_values_for(property, options = {})
+    #  method_defined?(:power) or attr_accessor :power
+    #  assignable_values_for property, options.merge(:through => :power)
+    #end
 
     def belongs_to_association?(property)
       reflection = reflect_on_association(property)
