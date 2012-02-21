@@ -5,10 +5,8 @@ describe AssignableValues::ActiveRecord do
 
   def disposable_song_class(&block)
     @klass = Class.new(Song, &block)
-    @klass.class_eval do
-      def self.name
-        'Song'
-      end
+    def @klass.name
+      'Song'
     end
     @klass
   end
