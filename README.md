@@ -221,6 +221,8 @@ Note that delegated validation is skipped when the delegate is `nil`. This way y
     Power.current = nil
     story.valid? # => true
 
+Think of this as enabling an optional authorization layer on top of your model validations, which can be switched on or off depending on the current context.
+
 Instead of a lambda you can also use the `:through` option to name an instance method:
 
     class Story < ActiveRecord::Base
