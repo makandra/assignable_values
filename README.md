@@ -174,16 +174,18 @@ The list of assignable values is generated at runtime. Since the given block is 
     end
 
 
-Obtaining assignable values from a delegate
--------------------------------------------
+Obtaining assignable values from another source
+-----------------------------------------------
 
-The list of assignable values can be provided by a delegate. This is useful for authorization scenarios like [Consul](https://github.com/makandra/consul) or [CanCan](https://github.com/ryanb/cancan), where permissions are defined in a single class.
+The list of assignable values can be provided by any object that is accessible from your model. This is useful for authorization scenarios like [Consul](https://github.com/makandra/consul) or [CanCan](https://github.com/ryanb/cancan), where permissions are defined in a single class.
 
-    class Song < ActiveRecord::Base
+You can define the source of assignable values by setting the `:through` option to a lambda:
+
+    class Story < ActiveRecord::Base
       assignable_values_for :state, :through => lambda { Power.current }
     end
 
-`Power.current` must now respond to a method `assignable_song_states` or `assignable_song_states(song)` which returns an `Enumerable` of state strings:
+`Power.current` must now respond to a method `assignable_story_states` or `assignable_story_states(story)` which returns an `Enumerable` of state strings:
 
     class Power
 
@@ -193,7 +195,7 @@ The list of assignable values can be provided by a delegate. This is useful for 
         @role = role
       end
 
-      def assignable_song_states(song)
+      def assignable_story_states(story)
         states = ['draft', 'pending']
         states << 'accepted' if @role == :admin
         states
@@ -203,28 +205,60 @@ The list of assignable values can be provided by a delegate. This is useful for 
 
 Listing and validating works the same with delegation:
 
-    song = Song.new(:state => 'accepted')
+    story = Story.new(:state => 'accepted')
 
     Power.current = Power.new(:guest)
-    song.assignable_states # => ['draft', 'pending']
-    song.valid? # => false
+    story.assignable_states # => ['draft', 'pending']
+    story.valid? # => false
 
     Power.current = Power.new(:admin)
-    song.assignable_states # => ['draft', 'pending', 'accepted']
-    song.valid? # => true
+    story.assignable_states # => ['draft', 'pending', 'accepted']
+    story.valid? # => true
 
 Note that delegated validation is skipped when the delegate is `nil`. This way your model remains usable when there is no authorization context, like in batch processes or the console:
 
-    song = Song.new(:state => 'foo')
+    story = Story.new(:state => 'foo')
     Power.current = nil
-    song.valid? # => true
+    story.valid? # => true
 
 Instead of a lambda you can also use the `:through` option to name an instance method:
 
-    class Song < ActiveRecord::Base
+    class Story < ActiveRecord::Base
       attr_accessor :power
       assignable_values_for :state, :through => :power
     end
+
+
+### Obtaining assignable values from a Consul power
+
+A common use case for the `:through` option is when there is some globally accessible object that knows about permissions for the current request. In practice you will find that it requires some effort to make sure such an object is properly instantiated and accessible.
+
+If you are using [Consul](https://github.com/makandra/consul), you will get a lot of this plumbing for free. Consul gives you a macro `current_power` to instantiate a so called "power", which describes what the current user may access:
+
+    class ApplicationController < ActionController::Base
+      include Consul::Controller
+
+      current_power do
+        Power.new(current_user)
+      end
+
+    end
+
+The code above will provide you with a helper method `current_power` for your controller and views. Everywhere else, you can simply access it from `Power.current`.
+
+You can now delegate validation of assignable values to the current power by saying:
+
+     class Story < ActiveRecord::Base
+       authorize_values_for :state
+     end
+
+This is a shortcut for saying:
+
+     class Story < ActiveRecord::Base
+       assignable_values_for :state, :through => lambda { Power.current }
+     end
+
+Head over to the [Consul README](https://github.com/makandra/consul) for details.
 
 
 Installation
@@ -241,7 +275,7 @@ Development
 -----------
 
 - Fork the repository.
-- Push your changes with specs.
+- Push your changes with specs. There is a Rails 3 test application in `spec/app_root` if you need to test integration with a live Rails app.
 - Send me a pull request.
 
 I'm very eager to keep this gem leightweight and on topic. If you're unsure whether a change would make it into the gem, [talk to me beforehand](henning.koch@makandra.de).
