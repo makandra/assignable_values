@@ -90,6 +90,20 @@ Defaults can be lambdas:
 The lambda will be evaluated in the context of the record instance.
 
 
+### Allowing blank values
+
+By default, an attribute *must* be assigned an value. If the value of an attribute is blank, the attribute
+will get a validation error.
+
+If you would like to change this behavior and allow blank values to be valid, use the `:allow_blank` option:
+
+    class Song < ActiveRecord::Base
+      assignable_values_for :genre, :default => 'rock', :allow_blank => true do
+        ['pop', 'rock', 'electronic']
+      end
+    end
+
+
 ### Values are only validated when they change
 
 Values are only validated when they change. This is useful when the list of assignable values can change during runtime:
