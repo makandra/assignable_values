@@ -10,12 +10,25 @@ module AssignableValues
 
         def humanize_string_value(value)
           if value.present?
-            dictionary_key = "assignable_values.#{model.name.underscore}.#{property}.#{value}"
-            I18n.t(dictionary_key, :default => value.humanize)
+            if @hardcoded_humanizations
+              @hardcoded_humanizations[value]
+            else
+              dictionary_key = "assignable_values.#{model.name.underscore}.#{property}.#{value}"
+              I18n.t(dictionary_key, :default => value.humanize)
+            end
           end
         end
 
         private
+
+        def parse_values(values)
+          if values.is_a?(Hash)
+            @hardcoded_humanizations = values
+            values = values.keys
+          else
+            super
+          end
+        end
 
         def define_humanized_method
           restriction = self
@@ -43,7 +56,6 @@ module AssignableValues
         def previously_saved_value(record)
           record.send("#{property}_was")
         end
-
 
       end
     end

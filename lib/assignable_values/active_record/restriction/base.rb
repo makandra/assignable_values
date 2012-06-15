@@ -48,6 +48,10 @@ module AssignableValues
 
         private
 
+        def parse_values(values)
+          values.to_a
+        end
+
         def current_value(record)
           record.send(property)
         end
@@ -115,10 +119,11 @@ module AssignableValues
 
         def raw_assignable_values(record)
           if delegate?
-            assignable_values_from_delegate(record)
+            values = assignable_values_from_delegate(record)
           else
-            record.instance_eval(&@values)
-          end.to_a
+            values = record.instance_eval(&@values)
+          end
+          parse_values(values)
         end
 
         def delegate(record)

@@ -264,35 +264,6 @@ describe AssignableValues::ActiveRecord do
         klass.new.assignable_genres.should == %w[pop rock]
       end
 
-      it "should define a method #humanized on strings in that list, which return up the value's' translation" do
-        klass = disposable_song_class do
-          assignable_values_for :genre do
-            %w[pop rock]
-          end
-        end
-        klass.new.assignable_genres.collect(&:humanized).should == ['Pop music', 'Rock music']
-      end
-
-      it 'should use String#humanize as a default translation' do
-        klass = disposable_song_class do
-          assignable_values_for :genre do
-            %w[electronic]
-          end
-        end
-        klass.new.assignable_genres.collect(&:humanized).should == ['Electronic']
-      end
-
-      it 'should not define a method #humanized on values that are not strings' do
-        klass = disposable_song_class do
-          assignable_values_for :year do
-            [1999, 2000, 2001]
-          end
-        end
-        years = klass.new.assignable_years
-        years.should == [1999, 2000, 2001]
-        years.first.should_not respond_to(:humanized)
-      end
-
       it 'should call #to_a on the list of assignable values, allowing ranges and scopes to be passed as allowed value descriptors' do
         klass = disposable_song_class do
           assignable_values_for :year do
@@ -323,6 +294,48 @@ describe AssignableValues::ActiveRecord do
         record = klass.new(:genre => 'ballad')
         record.save!(:validate => false)
         record.assignable_genres.should =~ %w[pop rock ballad]
+      end
+
+      context 'humanization' do
+
+        it "should define a method #humanized on strings in that list, which return up the value's' translation" do
+          klass = disposable_song_class do
+            assignable_values_for :genre do
+              %w[pop rock]
+            end
+          end
+          klass.new.assignable_genres.collect(&:humanized).should == ['Pop music', 'Rock music']
+        end
+
+        it 'should use String#humanize as a default translation' do
+          klass = disposable_song_class do
+            assignable_values_for :genre do
+              %w[electronic]
+            end
+          end
+          klass.new.assignable_genres.collect(&:humanized).should == ['Electronic']
+        end
+
+        it 'should not define a method #humanized on values that are not strings' do
+          klass = disposable_song_class do
+            assignable_values_for :year do
+              [1999, 2000, 2001]
+            end
+          end
+          years = klass.new.assignable_years
+          years.should == [1999, 2000, 2001]
+          years.first.should_not respond_to(:humanized)
+        end
+
+        it 'should allow to directly declare humanized values by passing a hash to assignable_values_for' do
+          klass = disposable_song_class do
+            assignable_values_for :genre do
+              { 'pop' => 'Pop music', 'rock' => 'Rock music' }
+            end
+          end
+          klass.new.assignable_genres.collect(&:humanized).should =~ ['Pop music', 'Rock music']
+        end
+
       end
 
       context 'with :through option' do
