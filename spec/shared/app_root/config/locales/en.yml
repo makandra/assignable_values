@@ -1,0 +1,14 @@
+# Sample localization file for English. Add more files in this directory for other locales.
+# See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
+
+en:
+
+  errors:
+    messages:
+      inclusion: "is not included in the list"
+
+  assignable_values:
+    song:
+      genre:
+        pop: 'Pop music'
+        rock: 'Rock music'

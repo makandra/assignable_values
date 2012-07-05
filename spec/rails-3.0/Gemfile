@@ -1,0 +1,9 @@
+source 'http://rubygems.org'
+
+gem 'sqlite3'
+gem 'rails', '=3.0.3'
+gem 'rspec'
+gem 'rspec-rails'
+gem 'ruby-debug'
+gem 'assignable_values', :path => '../..'
+

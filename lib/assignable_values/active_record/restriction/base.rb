@@ -21,11 +21,15 @@ module AssignableValues
           unless allow_blank? && value.blank?
             begin
               assignable_values = assignable_values(record)
-              assignable_values.include?(value) or record.errors.add(property, I18n.t('errors.messages.inclusion'))
+              assignable_values.include?(value) or record.errors.add(property, not_included_error_message)
             rescue DelegateUnavailable
               # if the delegate is unavailable, the validation is skipped
             end
           end
+        end
+
+        def not_included_error_message
+          I18n.t('errors.messages.inclusion', :default => 'is not included in the list')
         end
 
         def assignable_values(record)
@@ -85,6 +89,7 @@ module AssignableValues
         end
 
         def setup_default
+          ensure_after_initialize_callback_enabled
           @default = options[:default]
           restriction = self
           enhance_model do
@@ -93,6 +98,17 @@ module AssignableValues
               restriction.set_default(self)
             end
             after_initialize set_default_method
+          end
+        end
+
+        def ensure_after_initialize_callback_enabled
+          if Rails.version < '3'
+            enhance_model do
+              # Old ActiveRecord version only call after_initialize callbacks only if this method is defined in a class.
+              unless method_defined?(:after_initialize)
+                define_method(:after_initialize) {}
+              end
+            end
           end
         end
 
