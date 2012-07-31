@@ -33,8 +33,9 @@ module AssignableValues
         def define_humanized_method
           restriction = self
           enhance_model do
-            define_method "humanized_#{restriction.property}" do
-              value = send(restriction.property)
+            define_method "humanized_#{restriction.property}" do |*args|
+              given_value = args[0]
+              value = given_value || send(restriction.property)
               restriction.humanize_string_value(value)
             end
           end

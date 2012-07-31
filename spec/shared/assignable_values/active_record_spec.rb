@@ -71,6 +71,11 @@ describe AssignableValues::ActiveRecord do
           song.humanized_genre.should be_nil
         end
 
+        it 'should generate a method to retrieve the humanization of any given value' do
+          song = @klass.new(:genre => 'pop')
+          song.humanized_genre('rock').should == 'Rock music'
+        end
+
       end
 
       context 'if the :allow_blank option is set' do
