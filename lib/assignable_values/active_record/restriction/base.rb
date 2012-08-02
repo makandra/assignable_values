@@ -49,11 +49,15 @@ module AssignableValues
         def set_default(record)
           if record.new_record? && record.send(property).nil?
             default_value = evaluate_default(record, default)
-            if secondary_default? && !assignable_value?(record, default_value)
-              secondary_default_value = evaluate_default(record, secondary_default)
-              if assignable_value?(record, secondary_default_value)
-                default_value = secondary_default_value
+            begin
+              if secondary_default? && !assignable_value?(record, default_value)
+                secondary_default_value = evaluate_default(record, secondary_default)
+                if assignable_value?(record, secondary_default_value)
+                  default_value = secondary_default_value
+                end
               end
+            rescue AssignableValues::DelegateUnavailable
+              # skip secondary defaults if querying assignable values from a nil delegate
             end
             record.send("#{property}=", default_value)
           end

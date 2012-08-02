@@ -321,6 +321,15 @@ describe AssignableValues::ActiveRecord do
         klass.new.genre.should == 'pop'
       end
 
+      it "should not raise an error or change the primary default if assignable values are retrieved through a delegate, and the delegate is nil" do
+        klass = disposable_song_class do
+          assignable_values_for :genre, :default => 'techno', :secondary_default => 'pop', :through => lambda { nil }
+        end
+        expect do
+          klass.new.genre.should == 'techno'
+        end.to_not raise_error
+      end
+
       it 'should not cause the list of assignable values to be evaluated if the :secondary_default option is not used' do
         klass = disposable_song_class do
           assignable_values_for :genre, :default => 'techno' do
