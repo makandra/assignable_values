@@ -261,6 +261,79 @@ describe AssignableValues::ActiveRecord do
 
     end
 
+    context 'with :secondary_default option' do
+
+      it 'should set a secondary default value if the primary value is not assignable' do
+        klass = disposable_song_class do
+          assignable_values_for :genre, :default => 'techno', :secondary_default => 'rock' do
+            %w[pop rock]
+          end
+        end
+        klass.new.genre.should == 'rock'
+      end
+
+      it 'should not change the default value if the default value is assignable' do
+        klass = disposable_song_class do
+          assignable_values_for :genre, :default => 'pop', :secondary_default => 'rock' do
+            %w[pop rock]
+          end
+        end
+        klass.new.genre.should == 'pop'
+      end
+
+      it "should not change the primary default if the secondary default value isn't assignable either" do
+        klass = disposable_song_class do
+          assignable_values_for :genre, :default => 'techno', :secondary_default => 'jazz' do
+            %w[pop rock]
+          end
+        end
+        klass.new.genre.should == 'techno'
+      end
+
+      it 'should raise an error if used without a :default option' do
+        expect do
+          disposable_song_class do
+            assignable_values_for :genre, :secondary_default => 'pop' do
+              %w[pop rock]
+            end
+          end
+        end.to raise_error(AssignableValues::NoDefault)
+      end
+
+      it 'should allow to set a secondary default through a lambda' do
+        klass = disposable_song_class do
+          assignable_values_for :genre, :default => 'techno', :secondary_default => lambda { 'pop' } do
+            %w[pop rock]
+          end
+        end
+        klass.new.genre.should == 'pop'
+      end
+
+      it 'should evaluate a secondary lambda default in the context of the record instance' do
+        klass = disposable_song_class do
+          assignable_values_for :genre, :default => 'techno', :secondary_default => lambda { default_genre } do
+            %w[pop rock]
+          end
+          def default_genre
+            'pop'
+          end
+        end
+        klass.new.genre.should == 'pop'
+      end
+
+      it 'should not cause the list of assignable values to be evaluated if the :secondary_default option is not used' do
+        klass = disposable_song_class do
+          assignable_values_for :genre, :default => 'techno' do
+            raise "block called!"
+          end
+        end
+        expect do
+          klass.new.genre.should == 'techno'
+        end.to_not raise_error
+      end
+
+    end
+
     context 'when generating methods to list assignable values' do
 
       it 'should generate an instance method returning a list of assignable values' do

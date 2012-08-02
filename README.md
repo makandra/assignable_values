@@ -103,6 +103,18 @@ Defaults can be lambdas:
 
 The lambda will be evaluated in the context of the record instance.
 
+You can also default a secondary default that is only set if the primary default value is not assignable:
+
+    class Song < ActiveRecord::Base
+      assignable_values_for :year, :default => 1999, :secondary_default => lambda { Date.today.year } do
+        (Date.today.year - 2) .. Date.today.year
+      end
+    end
+
+If called in 2013 the code above will fall back to:
+
+    Song.new.year # => 2013
+
 
 ### Allowing blank values
 
