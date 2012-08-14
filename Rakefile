@@ -14,11 +14,23 @@ namespace :all do
     end
   end
 
-  desc "Bundle all spec apps"
-  task :bundle do
-    for_each_directory_of('spec/**/Gemfile') do |directory|
-      system("cd #{directory} && bundle install")
+  namespace :bundle do
+
+    desc "Bundle all spec apps"
+    task :install do
+      for_each_directory_of('spec/**/Gemfile') do |directory|
+        system("cd #{directory} && bundle install")
+      end
     end
+
+    desc "Update a gem given by the GEM environment variable"
+    task :update do
+      gem = ENV['GEM'] or raise "Name the gem you wish to update by setting a environment variable GEM"
+      for_each_directory_of('spec/**/Gemfile') do |directory|
+        system("cd #{directory} && bundle update #{gem}")
+      end
+    end
+
   end
 
 end

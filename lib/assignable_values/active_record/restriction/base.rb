@@ -37,12 +37,14 @@ module AssignableValues
           assignable_values(record).include?(value)
         end
 
-        def assignable_values(record)
+        def assignable_values(record, decorate = false)
           assignable_values = []
           old_value = previously_saved_value(record)
           assignable_values << old_value if old_value.present?
           assignable_values |= raw_assignable_values(record)
-          assignable_values = decorate_values(assignable_values)
+          if decorate
+            assignable_values = decorate_values(assignable_values)
+          end
           assignable_values
         end
 
@@ -159,7 +161,7 @@ module AssignableValues
           enhance_model do
             assignable_values_method = "assignable_#{restriction.property.to_s.pluralize}"
             define_method assignable_values_method do
-              restriction.assignable_values(self)
+              restriction.assignable_values(self, true)
             end
           end
         end

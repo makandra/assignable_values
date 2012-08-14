@@ -7,6 +7,7 @@ ENV['RAILS_ROOT'] = 'app_root'
 # Load the Rails environment and testing framework
 require "#{File.dirname(__FILE__)}/app_root/config/environment"
 require 'rspec/rails'
+require 'rspec_candy/all'
 
 # Load dependencies
 # require 'has_defaults'

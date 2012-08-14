@@ -59,14 +59,15 @@ Or you can retrieve the humanized version of any given value by passing it as an
 
     song.humanized_genre('rock') # => 'Rock music'
 
-When obtaining a list of assignable values, each value will have a method `#humanized` that returns the translation:
+You can obtain a list of all assignable values with their humanizations:
 
-    song.assignable_genres.first           # => "pop"
-    song.assignable_genres.first.humanized # => "Pop music"
+    song.humanized_genres.size            # => 3
+    song.humanized_genres.first.value     # => "pop"
+    song.humanized_genres.first.humanized # => "Pop music"
 
-You can populate a `<select>` tag with pairs of internal values and human labels like this:
+A good way to populate a `<select>` tag with pairs of internal values and human labels is to use the `collection_select` helper from Rails:
 
-    form.collection_select :genre, form.object.assignable_genres, :to_s, :humanized
+    form.collection_select :genre, form.object.humanized_genres, :value, :humanized
 
 If you don't like to use your I18n dictionary for humanizations, you can also declare them directly in your model like this:
 
