@@ -94,15 +94,15 @@ The default is applied to new records:
 
     Song.new.genre # => 'rock'
 
-Defaults can be lambdas:
+Defaults can be procs:
 
     class Song < ActiveRecord::Base
-      assignable_values_for :genre, :default => lambda { Date.today.year } do
+      assignable_values_for :genre, :default => proc { Date.today.year } do
         1980 .. 2011
       end
     end
 
-The lambda will be evaluated in the context of the record instance.
+The proc will be evaluated in the context of the record instance.
 
 You can also default a secondary default that is only set if the primary default value is not assignable:
 
