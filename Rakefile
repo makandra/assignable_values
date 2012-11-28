@@ -23,11 +23,10 @@ namespace :all do
       end
     end
 
-    desc "Update a gem given by the GEM environment variable"
+    desc "Update all gems, or a list of gem given by the GEM environment variable"
     task :update do
-      gem = ENV['GEM'] or raise "Name the gem you wish to update by setting a environment variable GEM"
       for_each_directory_of('spec/**/Gemfile') do |directory|
-        system("cd #{directory} && bundle update #{gem}")
+        system("cd #{directory} && bundle update #{ENV['GEM']}")
       end
     end
 

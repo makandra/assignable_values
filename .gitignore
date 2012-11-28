@@ -3,5 +3,3 @@ pkg
 *.gem
 .idea
 spec/*/log/*
-Gemfile.lock
-
