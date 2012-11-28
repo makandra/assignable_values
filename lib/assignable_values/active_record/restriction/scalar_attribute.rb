@@ -9,10 +9,10 @@ module AssignableValues
           define_humanized_values_method
         end
 
-        def humanized_value(value)
+        def humanized_value(values, value) # we take the values because that contains the humanizations in case humanizations are hard-coded as a hash
           if value.present?
-            if @hardcoded_humanizations
-              @hardcoded_humanizations[value]
+            if values.respond_to?(:humanizations)
+              values.humanizations[value]
             else
               dictionary_scope = "assignable_values.#{model.name.underscore}.#{property}"
               I18n.t(value, :scope => dictionary_scope, :default => default_humanization_for_value(value))
@@ -21,8 +21,9 @@ module AssignableValues
         end
 
         def humanized_values(record)
-          assignable_values(record).collect do |value|
-            HumanizedValue.new(value, humanized_value(value))
+          values = assignable_values(record)
+          values.collect do |value|
+            HumanizedValue.new(value, humanized_value(values, value))
           end
         end
 
@@ -38,8 +39,18 @@ module AssignableValues
 
         def parse_values(values)
           if values.is_a?(Hash)
-            @hardcoded_humanizations = values
-            values = values.keys
+            { :values => values.keys,
+              :humanizations => values }
+            #puts "----"
+            #puts "HAS HUMANIZATIONS"
+            #humanizations = values
+            #values = values.keys.dup
+            #values.singleton_class.send(:define_method, :humanizations) do
+            #  puts "----"
+            #  puts "HUMANIZATIONS used"
+            #  humanizations
+            #end
+            #values
           else
             super
           end
@@ -49,9 +60,10 @@ module AssignableValues
           restriction = self
           enhance_model do
             define_method "humanized_#{restriction.property}" do |*args|
+              values = restriction.assignable_values(self)
               given_value = args[0]
               value = given_value || send(restriction.property)
-              restriction.humanized_value(value)
+              restriction.humanized_value(values, value)
             end
           end
         end
@@ -71,7 +83,7 @@ module AssignableValues
             if value.is_a?(String)
               value = value.dup
               value.singleton_class.send(:define_method, :humanized) do
-                restriction.humanized_value(value)
+                restriction.humanized_value(values, value)
               end
             end
             value

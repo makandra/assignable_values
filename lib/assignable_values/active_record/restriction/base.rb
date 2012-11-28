@@ -41,7 +41,11 @@ module AssignableValues
           assignable_values = []
           old_value = previously_saved_value(record)
           assignable_values << old_value if old_value.present?
-          assignable_values |= raw_assignable_values(record)
+          parsed_values = parsed_assignable_values(record)
+          assignable_values |= parsed_values.delete(:values)
+          parsed_values.each do |meta_name, meta_content|
+            assignable_values.singleton_class.send(:define_method, meta_name) { meta_content }
+          end
           if decorate
             assignable_values = decorate_values(assignable_values)
           end
@@ -77,7 +81,7 @@ module AssignableValues
         end
 
         def parse_values(values)
-          values.to_a
+          { :values => values.to_a }
         end
 
         def current_value(record)
@@ -166,7 +170,7 @@ module AssignableValues
           end
         end
 
-        def raw_assignable_values(record)
+        def parsed_assignable_values(record)
           if delegate?
             values = assignable_values_from_delegate(record)
           else

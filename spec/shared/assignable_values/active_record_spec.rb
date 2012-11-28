@@ -379,30 +379,6 @@ describe AssignableValues::ActiveRecord do
 
       context 'humanization' do
 
-        context 'legacy methods for API compatibility' do
-
-          it "should define a method #humanized on assignable string values, which return up the value's' translation" do
-            klass = Song.disposable_copy do
-              assignable_values_for :genre do
-                %w[pop rock]
-              end
-            end
-            klass.new.assignable_genres.collect(&:humanized).should == ['Pop music', 'Rock music']
-          end
-
-          it 'should not define a method #humanized on values that are not strings' do
-            klass = Song.disposable_copy do
-              assignable_values_for :year do
-                [1999, 2000, 2001]
-              end
-            end
-            years = klass.new.assignable_years
-            years.should == [1999, 2000, 2001]
-            years.first.should_not respond_to(:humanized)
-          end
-
-        end
-
         it 'should define a method that return pairs of values and their humanization' do
           klass = Song.disposable_copy do
             assignable_values_for :genre do
@@ -435,13 +411,28 @@ describe AssignableValues::ActiveRecord do
           years.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire stroke back', 'The year the Jedi returned']
         end
 
-        it 'should allow to directly declare humanized values by passing a hash to assignable_values_for' do
-          klass = Song.disposable_copy do
-            assignable_values_for :genre do
-              { 'pop' => 'Pop music', 'rock' => 'Rock music' }
+        context 'hardcoded humanizations' do
+
+          it 'should allow to directly declare humanized values by passing a hash to assignable_values_for' do
+            klass = Song.disposable_copy do
+              assignable_values_for :genre do
+                { 'pop' => 'Pop music', 'rock' => 'Rock music' }
+              end
             end
+            klass.new.humanized_genres.collect(&:humanized).sort.should =~ ['Pop music', 'Rock music']
           end
-          klass.new.humanized_genres.collect(&:humanized).should =~ ['Pop music', 'Rock music']
+
+          it "should correctly humanize values if the humanizations were declared using a hash, the values are not strings, and the list of humanized values hasn't been called before (bugfix)" do
+            klass = Song.disposable_copy do
+              assignable_values_for :duration do
+                { 60 => '1:00',
+                  90 => '1:30' }
+              end
+            end
+            klass.new(:duration => 60).humanized_duration.should == '1:00'
+            klass.new(:duration => 90).humanized_duration.should == '1:30'
+          end
+
         end
 
         it 'should properly look up humanizations for namespaced models' do
@@ -452,6 +443,30 @@ describe AssignableValues::ActiveRecord do
           end
           years = klass.new.humanized_years
           years.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire stroke back', 'The year the Jedi returned']
+        end
+
+        context 'legacy methods for API compatibility' do
+
+          it "should define a method #humanized on assignable string values, which return up the value's' translation" do
+            klass = Song.disposable_copy do
+              assignable_values_for :genre do
+                %w[pop rock]
+              end
+            end
+            klass.new.assignable_genres.collect(&:humanized).should == ['Pop music', 'Rock music']
+          end
+
+          it 'should not define a method #humanized on values that are not strings' do
+            klass = Song.disposable_copy do
+              assignable_values_for :year do
+                [1999, 2000, 2001]
+              end
+            end
+            years = klass.new.assignable_years
+            years.should == [1999, 2000, 2001]
+            years.first.should_not respond_to(:humanized)
+          end
+
         end
 
       end
