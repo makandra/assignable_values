@@ -163,6 +163,60 @@ Once a changed value has been saved, the previous value disappears from the list
 This is to prevent records from becoming invalid as the list of assignable values evolves. This also prevents `<select>` menus with blank selections when opening an old record in a web form.
 
 
+Multiple selection
+------------------
+
+You can restrict the values but allow multiple selections using serialized arrays:
+
+    class Recording
+
+      serialize :formats, Array 
+
+      assignable_values_for :formats do
+        %w[ep lp single]
+      end
+
+    end
+    
+Now, each assigned array value is checked during validation:
+
+    Recording.new(:formats => ['lp','ep']).valid?        # => true
+    Recording.new(:formats => ['lp', 'elephant').valid?  # => false
+    
+An error is added for every invalid array element.
+
+
+### blank values
+
+For convenience, restricted multiple selection attributes allow the blank value (the empty array) by default. Keep in mind that `nil` will result in an empty array for serialized arrays.  
+
+If you would like to change this behavior and disallow blank values, set `:allow_blank` option to false.
+
+Remember that values are only validated when they change. Thus, if a blank array remains unchanged it is still valid, regardingless the `:allow_blank` option.    
+
+### Humanized output for multiple selection
+
+By default, the humanized output is the array of the humanized values joined by ", ".
+
+    recording = Recording.new(:formats => ['lp', 'ep'])
+    recording.humanized_formats                          # => "Long play, Extended play"
+
+You can override the separator with the `:separator` option:
+
+    class Recording
+
+      serialize :formats, Array 
+
+      assignable_values_for :formats, :separator => "/" do
+        %w[ep lp single]
+      end
+
+    end
+    
+    recording = Recording.new(:formats => ['lp', 'ep'])
+    recording.humanized_formats                          # => "Long play/Extended play"
+
+
 Restricting belongs_to associations
 -----------------------------------
 
