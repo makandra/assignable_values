@@ -6,6 +6,7 @@ en:
   errors:
     messages:
       inclusion: "is not included in the list"
+      blank: "can't be blank"
 
   assignable_values:
     song:
@@ -21,3 +22,7 @@ en:
         '1977': 'The year a new hope was born'
         '1980': 'The year the Empire stroke back'
         '1983': 'The year the Jedi returned'
+      formats:
+        lp: 'Long play'
+        ep: 'Extended play'
+        single: 'Single'

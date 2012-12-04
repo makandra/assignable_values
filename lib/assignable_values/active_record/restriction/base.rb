@@ -20,17 +20,25 @@ module AssignableValues
           value = current_value(record)
           unless allow_blank? && value.blank?
             begin
-              unless assignable_value?(record, value)
-                record.errors.add(property, not_included_error_message)
-              end
+              validate_value(record, value)
             rescue DelegateUnavailable
               # if the delegate is unavailable, the validation is skipped
             end
           end
         end
+        
+        def validate_value(record, value)
+          unless assignable_value?(record, value)
+            record.errors.add(property, not_included_error_message)
+          end
+        end
 
         def not_included_error_message
           I18n.t('errors.messages.inclusion', :default => 'is not included in the list')
+        end
+        
+        def cant_be_blank_error_message
+          I18n.t('errors.messages.blank', :default => "can't be blank")
         end
 
         def assignable_value?(record, value)
@@ -38,9 +46,7 @@ module AssignableValues
         end
 
         def assignable_values(record, decorate = false)
-          assignable_values = []
-          old_value = previously_saved_value(record)
-          assignable_values << old_value if old_value.present?
+          assignable_values = values_to_skip_validation(record)
           parsed_values = parsed_assignable_values(record)
           assignable_values |= parsed_values.delete(:values)
           parsed_values.each do |meta_name, meta_content|
@@ -71,6 +77,10 @@ module AssignableValues
         end
 
         private
+        
+        def values_to_skip_validation(record)
+          [previously_saved_value(record)].compact
+        end
 
         def evaluate_default(record, value_or_proc)
           if value_or_proc.is_a?(Proc)

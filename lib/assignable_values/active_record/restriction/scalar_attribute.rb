@@ -8,13 +8,16 @@ module AssignableValues
           define_humanized_value_method
           define_humanized_values_method
         end
+        
+        def dictionary_scope
+          "assignable_values.#{model.name.underscore}.#{property}"
+        end
 
         def humanized_value(values, value) # we take the values because that contains the humanizations in case humanizations are hard-coded as a hash
           if value.present?
             if values.respond_to?(:humanizations)
               values.humanizations[value]
             else
-              dictionary_scope = "assignable_values.#{model.name.underscore}.#{property}"
               I18n.t(value, :scope => dictionary_scope, :default => default_humanization_for_value(value))
             end
           end
@@ -67,11 +70,21 @@ module AssignableValues
             end
           end
         end
+        
+        def humanized_values_method_name
+          restriction = self
+          if restriction.property.to_s.pluralize == restriction.property.to_s
+            "available_humanized_#{restriction.property.to_s.pluralize}"
+          else
+            "humanized_#{restriction.property.to_s.pluralize}"
+          end
+        end
 
         def define_humanized_values_method
           restriction = self
+          name = humanized_values_method_name
           enhance_model do
-            define_method "humanized_#{restriction.property.to_s.pluralize}" do
+            define_method name do
               restriction.humanized_values(self)
             end
           end

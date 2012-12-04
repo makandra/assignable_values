@@ -181,6 +181,101 @@ describe AssignableValues::ActiveRecord do
       end
 
     end
+    
+    context 'when validating serialized arrays' do
+      
+      context 'without options' do
+
+        before :each do
+          @klass = Recording::Vinyl.disposable_copy do
+            assignable_values_for :formats do
+              %w[lp ep single]
+            end
+          end
+        end
+
+        it 'should validate that the attribute is allowed' do
+          @klass.new(:formats => ['ep']).should be_valid
+          @klass.new(:formats => ['ep', 'lp', 'single']).should be_valid
+          @klass.new(:formats => ['disallowed value']).should_not be_valid
+          @klass.new(:formats => ['disallowed value', 'ep']).should_not be_valid
+        end
+
+        it 'should use the same error message as validates_inclusion_of' do
+          record = @klass.new(:formats => ['disallowed value'])
+          record.valid?
+          errors = record.errors[:formats]
+          error = errors.is_a?(Array) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
+          error.should == I18n.t('errors.messages.inclusion')
+          error.should == 'is not included in the list'
+        end
+        
+        it 'should accept an empty array' do
+          @klass.new(:formats => []).should be_valid
+        end
+        
+        it 'should allow a previously saved value even if that value is no longer allowed' do
+          record = @klass.create!(:formats => ['ep'])
+          @klass.update_all(:formats => ['disallowed value', 'ep'].to_yaml) # update without validations for the sake of this test
+          record.reload.should be_valid
+        end
+        
+        context "#humanized value" do
+        
+          it 'should generate a method returning an array with the humanized values' do
+            vinyl = @klass.new(:formats => ['ep'])
+            vinyl.humanized_formats.should == "Extended play"
+          end
+          
+          it 'should join the values by ", "' do
+            vinyl = @klass.new(:formats => ['lp', 'ep'])
+            vinyl.humanized_formats.should == "Long play, Extended play"
+          end
+          
+        end
+        
+      end
+      
+      context 'if the :allow_blank option is set to false' do
+        
+        before :each do
+          @klass = Recording::Vinyl.disposable_copy do
+            assignable_values_for :formats, :allow_blank => false do
+              %w[lp ep single]
+            end
+          end
+        end
+        
+        it 'should not accept an empty array' do
+          @klass.new(:formats => []).should_not be_valid
+        end
+        
+        it 'should accept an empty array if the previous value was empty' do
+          vinyl = @klass.create!(:formats =>['lp', 'ep'])
+          @klass.update_all(:formats => []) # bypass validations
+          vinyl.reload
+          vinyl.formats = []
+          vinyl.should be_valid
+        end
+        
+      end
+      
+      context 'if the :separator option is set to "/"' do
+        before :each do
+          @klass = Recording::Vinyl.disposable_copy do
+            assignable_values_for :formats, :separator => "/" do
+              %w[lp ep single]
+            end
+          end
+        end
+        
+        it 'should join the values by "/"' do
+          vinyl = @klass.new(:formats => ['lp', 'ep'])
+          vinyl.humanized_formats.should == "Long play/Extended play"
+        end
+      end
+      
+    end
 
     context 'when delegating using the :through option' do
 
@@ -390,6 +485,18 @@ describe AssignableValues::ActiveRecord do
           genres.collect(&:humanized).should == ['Pop music', 'Rock music']
           genres.collect(&:to_s).should == ['Pop music', 'Rock music']
         end
+        
+        context 'when the property cannot be pluralized' do
+          it 'should prefix the method returning all pairs with "available"' do
+            klass = Recording::Vinyl.disposable_copy do
+              assignable_values_for :formats do
+                %w[ep lp single]
+              end
+            end
+            klass.new.should respond_to :available_humanized_formats
+          end
+        end
+        
 
         it 'should use String#humanize as a default translation' do
           klass = Song.disposable_copy do
