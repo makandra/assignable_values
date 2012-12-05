@@ -39,10 +39,13 @@ module AssignableValues
 
         def assignable_values(record, decorate = false)
           assignable_values = []
-          old_value = previously_saved_value(record)
-          assignable_values << old_value if old_value.present?
           parsed_values = parsed_assignable_values(record)
-          assignable_values |= parsed_values.delete(:values)
+          current_values = parsed_values.delete(:values)
+          old_value = previously_saved_value(record)
+          if old_value.present? && !current_values.include?(old_value)
+            assignable_values << old_value
+          end
+          assignable_values += current_values
           parsed_values.each do |meta_name, meta_content|
             assignable_values.singleton_class.send(:define_method, meta_name) { meta_content }
           end

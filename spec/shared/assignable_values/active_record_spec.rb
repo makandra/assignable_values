@@ -366,7 +366,7 @@ describe AssignableValues::ActiveRecord do
         klass.new.assignable_genres.should == %w[pop rock]
       end
 
-      it 'should include a previously saved value, even if is no longer allowed' do
+      it 'should prepend a previously saved value to the top of the list, even if is no longer allowed' do
         klass = Song.disposable_copy do
           assignable_values_for :genre do
             %w[pop rock]
@@ -374,7 +374,17 @@ describe AssignableValues::ActiveRecord do
         end
         record = klass.create!(:genre => 'pop')
         klass.update_all(:genre => 'ballad') # update without validation for the sake of this test
-        record.reload.assignable_genres.should =~ %w[pop rock ballad]
+        record.reload.assignable_genres.should == %w[ballad pop rock]
+      end
+
+      it 'should not prepend a previously saved value to the top of the list if it is still allowed (bugfix)' do
+        klass = Song.disposable_copy do
+          assignable_values_for :genre do
+            %w[pop rock]
+          end
+        end
+        record = klass.create!(:genre => 'rock')
+        record.assignable_genres.should == %w[pop rock]
       end
 
       context 'humanization' do
