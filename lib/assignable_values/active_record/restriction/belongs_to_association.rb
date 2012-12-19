@@ -13,6 +13,10 @@ module AssignableValues
           "#{property}_id"
         end
 
+        def error_property
+          association_id_method
+        end
+
         def association_id(record)
           record.send(association_id_method)
         end

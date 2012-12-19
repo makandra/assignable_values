@@ -105,6 +105,21 @@ describe AssignableValues::ActiveRecord do
         klass.new(:artist => disallowed_association).should_not be_valid
       end
 
+      it 'should attach errors to the foreign key of the association, not the association itself ' do
+        allowed_association = Artist.create!
+        disallowed_association = Artist.create!
+        klass = Song.disposable_copy do
+          assignable_values_for :artist do
+            [allowed_association]
+          end
+        end
+        record = klass.new(:artist => disallowed_association)
+        record.valid?
+        errors = record.errors[:artist_id]
+        error = errors.is_a?(Array) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
+        error.should == I18n.t('errors.messages.inclusion')
+      end
+
       it 'should allow a nil association if the :allow_blank option is set' do
         klass = Song.disposable_copy do
           assignable_values_for :artist, :allow_blank => true do

@@ -21,12 +21,16 @@ module AssignableValues
           unless allow_blank? && value.blank?
             begin
               unless assignable_value?(record, value)
-                record.errors.add(property, not_included_error_message)
+                record.errors.add(error_property, not_included_error_message)
               end
             rescue DelegateUnavailable
               # if the delegate is unavailable, the validation is skipped
             end
           end
+        end
+
+        def error_property
+          property
         end
 
         def not_included_error_message

@@ -193,7 +193,10 @@ Listing and validating als works the same:
     song.artist = lt2
     song.valid? # => false
 
-Similiar to scalar attributes, associations are only validated when the foreign key (`artist_id` in the example) changes. Previously saved values will remain assignable until another association has been saved.
+Similiar to scalar attributes, associations are only validated when the foreign key (`artist_id` in the example above) changes.
+Previously saved values will remain assignable until another association has been saved.
+
+Validation errors will be attached to the association's foreign key (`artist_id` in the example above).
 
 
 How assignable values are evaluated
