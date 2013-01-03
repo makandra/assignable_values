@@ -18,7 +18,7 @@ module AssignableValues
 
         def validate_record(record)
           value = current_value(record)
-          unless allow_blank? && value.blank?
+          unless allow_blank?(record) && value.blank?
             begin
               unless assignable_value?(record, value)
                 record.errors.add(error_property, not_included_error_message)
@@ -115,8 +115,8 @@ module AssignableValues
           @options.has_key?(:secondary_default)
         end
 
-        def allow_blank?
-          @options[:allow_blank]
+        def allow_blank?(record)
+          evaluate_option(record, @options[:allow_blank])
         end
 
         def delegate_definition
@@ -187,10 +187,15 @@ module AssignableValues
         end
 
         def delegate(record)
-          case delegate_definition
-          when Symbol then record.send(delegate_definition)
-          when Proc then record.instance_eval(&delegate_definition)
-          else raise "Illegal delegate definition: #{delegate_definition.inspect}"
+          evaluate_option(record, delegate_definition)
+        end
+
+        def evaluate_option(record, option)
+          case option
+          when NilClass, TrueClass, FalseClass then option
+          when Symbol then record.send(option)
+          when Proc then record.instance_eval(&option)
+          else raise "Illegal option type: #{option.inspect}"
           end
         end
 

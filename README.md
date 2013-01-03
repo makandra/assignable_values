@@ -130,6 +130,10 @@ If you would like to change this behavior and allow blank values to be valid, us
       end
     end
 
+The `:allow_blank` option can be a symbol, in which case a method of that name will be called on the record.
+
+The `:allow_blank` option can also be a lambda, in which case the lambda will be called in the context of the record.
+
 
 ### Values are only validated when they change
 

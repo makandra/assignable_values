@@ -69,7 +69,7 @@ describe AssignableValues::ActiveRecord do
 
       end
 
-      context 'if the :allow_blank option is set' do
+      context 'if the :allow_blank option is set to true' do
 
         before :each do
           @klass = Song.disposable_copy do
@@ -83,8 +83,51 @@ describe AssignableValues::ActiveRecord do
           @klass.new(:genre => nil).should be_valid
         end
 
-        it 'should allow an empty string as value if the :allow_blank option is set' do
+        it 'should allow an empty string as value' do
           @klass.new(:genre => '').should be_valid
+        end
+
+      end
+
+      context 'if the :allow_blank option is set to a symbol that refers to an instance method' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+
+            attr_accessor :genre_may_be_blank
+
+            assignable_values_for :genre, :allow_blank => :genre_may_be_blank do
+              %w[pop rock]
+            end
+
+          end
+        end
+
+        it 'should call that method to determine if a blank value is allowed' do
+          @klass.new(:genre => '', :genre_may_be_blank => true).should be_valid
+          @klass.new(:genre => '', :genre_may_be_blank => false).should_not be_valid
+        end
+
+      end
+
+      context 'if the :allow_blank option is set to a lambda ' do
+
+
+        before :each do
+          @klass = Song.disposable_copy do
+
+            attr_accessor :genre_may_be_blank
+
+            assignable_values_for :genre, :allow_blank => lambda { genre_may_be_blank } do
+              %w[pop rock]
+            end
+
+          end
+        end
+
+        it 'should evaluate that lambda in the record context to determine if a blank value is allowed' do
+          @klass.new(:genre => '', :genre_may_be_blank => true).should be_valid
+          @klass.new(:genre => '', :genre_may_be_blank => false).should_not be_valid
         end
 
       end
