@@ -202,7 +202,7 @@ module AssignableValues
         def assignable_values_from_delegate(record)
           delegate = delegate(record)
           delegate.present? or raise DelegateUnavailable, "Cannot query a nil delegate for assignable values"
-          delegate_query_method = "assignable_#{model.name.underscore}_#{property.to_s.pluralize}"
+          delegate_query_method = "assignable_#{model.name.underscore.gsub('/', '_')}_#{property.to_s.pluralize}"
           args = delegate.method(delegate_query_method).arity == 1 ? [record] : []
           delegate.send(delegate_query_method, *args)
         end

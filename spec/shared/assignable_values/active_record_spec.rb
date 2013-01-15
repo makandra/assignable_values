@@ -264,6 +264,16 @@ describe AssignableValues::ActiveRecord do
         klass.new(:genre => 'disallowed value').should_not be_valid
       end
 
+      it 'should generate a legal getter name for a namespaced model (bugfix)' do
+        klass = Recording::Vinyl.disposable_copy do
+          assignable_values_for :year, :through => :delegate
+          def delegate
+            OpenStruct.new(:assignable_recording_vinyl_years => [1977, 1980, 1983])
+          end
+        end
+        klass.new.assignable_years.should == [1977, 1980, 1983]
+      end
+
       it 'should skip the validation if that method returns nil' do
         klass = Song.disposable_copy do
           assignable_values_for :genre, :through => :delegate
