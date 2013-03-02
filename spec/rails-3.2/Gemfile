@@ -4,7 +4,8 @@ gem 'sqlite3'
 gem 'rails', '~>3.2'
 gem 'rspec'
 gem 'rspec-rails'
-gem 'ruby-debug'
+gem 'ruby-debug', :platforms => :ruby_18
+gem 'debugger', :platforms => :ruby_19
 gem 'rspec_candy'
 gem 'assignable_values', :path => '../..'
 

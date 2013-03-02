@@ -1,9 +1,11 @@
 source 'http://rubygems.org'
 
 gem 'sqlite3'
-gem 'rails', '=2.3.10'
+gem 'test-unit', '=1.2.3', :platforms => :ruby_19
+gem 'rails', '~>2.3.10'
 gem 'rspec', '<2'
 gem 'rspec-rails', '<2'
-gem 'ruby-debug'
+gem 'ruby-debug', :platforms => :ruby_18
+gem 'debugger', :platforms => :ruby_19
 gem 'rspec_candy'
 gem 'assignable_values', :path => '../..'

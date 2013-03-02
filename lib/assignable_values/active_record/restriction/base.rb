@@ -81,7 +81,7 @@ module AssignableValues
 
         def evaluate_default(record, value_or_proc)
           if value_or_proc.is_a?(Proc)
-            record.instance_eval(&value_or_proc)
+            record.instance_exec(&value_or_proc)
           else
             value_or_proc
           end
@@ -181,7 +181,7 @@ module AssignableValues
           if delegate?
             values = assignable_values_from_delegate(record)
           else
-            values = record.instance_eval(&@values)
+            values = record.instance_exec(&@values)
           end
           parse_values(values)
         end
@@ -194,7 +194,7 @@ module AssignableValues
           case option
           when NilClass, TrueClass, FalseClass then option
           when Symbol then record.send(option)
-          when Proc then record.instance_eval(&option)
+          when Proc then record.instance_exec(&option)
           else raise "Illegal option type: #{option.inspect}"
           end
         end
