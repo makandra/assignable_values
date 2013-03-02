@@ -23,6 +23,7 @@ The assigned value is checked during validation:
     Song.new(:genre => 'elephant').valid? # => false
 
 The validation error message is the same as the one from `validates_inclusion_of` (`errors.messages.inclusion` in your I18n dictionary).
+You can also set a custom error message with the `:message` option.
 
 
 ### Listing assignable values

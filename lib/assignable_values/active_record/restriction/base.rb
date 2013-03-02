@@ -34,7 +34,11 @@ module AssignableValues
         end
 
         def not_included_error_message
-          I18n.t('errors.messages.inclusion', :default => 'is not included in the list')
+          if @options[:message]
+            @options[:message]
+          else
+            I18n.t('errors.messages.inclusion', :default => 'is not included in the list')
+          end
         end
 
         def assignable_value?(record, value)

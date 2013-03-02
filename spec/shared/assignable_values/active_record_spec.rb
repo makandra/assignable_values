@@ -112,7 +112,6 @@ describe AssignableValues::ActiveRecord do
 
       context 'if the :allow_blank option is set to a lambda ' do
 
-
         before :each do
           @klass = Song.disposable_copy do
 
@@ -128,6 +127,26 @@ describe AssignableValues::ActiveRecord do
         it 'should evaluate that lambda in the record context to determine if a blank value is allowed' do
           @klass.new(:genre => '', :genre_may_be_blank => true).should be_valid
           @klass.new(:genre => '', :genre_may_be_blank => false).should_not be_valid
+        end
+
+      end
+
+      context 'if the :message option is set to a string' do
+
+        before :each do
+           @klass = Song.disposable_copy do
+             assignable_values_for :genre, :message => 'should be something different' do
+               %w[pop rock]
+             end
+           end
+        end
+
+        it 'should use this string as a custom error message' do
+          record = @klass.new(:genre => 'disallowed value')
+          record.valid?
+          errors = record.errors[:genre]
+          error = errors.is_a?(Array) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
+          error.should == 'should be something different'
         end
 
       end
