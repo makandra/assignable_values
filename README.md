@@ -1,4 +1,4 @@
-assignable_values - Enums on vitamins
+assignable_values - Enums on vitamins [![Build Status](https://secure.travis-ci.org/makandra/assignable_values.png?branch=master)](https://travis-ci.org/makandra/assignable_values)
 =====================================
 
 `assignable_values` lets you restrict the values that can be assigned to attributes or associations of ActiveRecord models. You can think of it as enums where the list of allowed values is generated at runtime and the value is checked during validation.
