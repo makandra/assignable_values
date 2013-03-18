@@ -2,6 +2,7 @@ source 'http://rubygems.org'
 
 gem 'sqlite3'
 gem 'test-unit', '=1.2.3', :platforms => :ruby_19
+gem 'hoe', '=2.8.0', :platforms => :ruby_19
 gem 'rails', '~>2.3.10'
 gem 'rspec', '<2'
 gem 'rspec-rails', '<2'

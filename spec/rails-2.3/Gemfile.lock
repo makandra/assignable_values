@@ -25,8 +25,8 @@ GEM
     debugger-linecache (1.1.2)
       debugger-ruby_core_source (>= 1.1.1)
     debugger-ruby_core_source (1.2.0)
-    hoe (3.5.1)
-      rake (>= 0.8, < 11.0)
+    hoe (2.8.0)
+      rake (>= 0.8.7)
     linecache (0.46)
       rbx-require-relative (> 0.0.4)
     rack (1.1.6)
@@ -63,6 +63,7 @@ PLATFORMS
 DEPENDENCIES
   assignable_values!
   debugger
+  hoe (= 2.8.0)
   rails (~> 2.3.10)
   rspec (< 2)
   rspec-rails (< 2)

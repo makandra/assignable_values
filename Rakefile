@@ -8,7 +8,12 @@ task :default => 'all:spec'
 namespace :travis_ci do
 
   desc 'Things to do before Travis CI begins'
-  task :prepare do
+  task :prepare => :slimgems do
+  end
+
+  desc 'Install slimgems'
+  task :slimgems do
+    system('gem install slimgems')
   end
 
 end
