@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/makandra/assignable_values'
   s.summary = 'Restrict the values assignable to ActiveRecord attributes or associations. Or enums on steroids.'
   s.description = s.summary
+  s.license = 'MIT'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
