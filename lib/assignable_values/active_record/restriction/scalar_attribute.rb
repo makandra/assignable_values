@@ -41,16 +41,6 @@ module AssignableValues
           if values.is_a?(Hash)
             { :values => values.keys,
               :humanizations => values }
-            #puts "----"
-            #puts "HAS HUMANIZATIONS"
-            #humanizations = values
-            #values = values.keys.dup
-            #values.singleton_class.send(:define_method, :humanizations) do
-            #  puts "----"
-            #  puts "HUMANIZATIONS used"
-            #  humanizations
-            #end
-            #values
           else
             super
           end
@@ -81,10 +71,8 @@ module AssignableValues
           restriction = self
           values.collect do |value|
             if value.is_a?(String)
-              value = value.dup
-              value.singleton_class.send(:define_method, :humanized) do
-                restriction.humanized_value(values, value)
-              end
+              humanization = restriction.humanized_value(values, value)
+              value = HumanizableString.new(value, humanization)
             end
             value
           end
