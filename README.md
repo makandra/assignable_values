@@ -56,9 +56,10 @@ You can access the humanized version for the current value like this:
     song = Song.new(:genre => 'pop')
     song.humanized_genre # => 'Pop music'
 
-Or you can retrieve the humanized version of any given value by passing it as an argument:
+Or you can retrieve the humanized version of any given value by passing it as an argument to either instance or class:
 
     song.humanized_genre('rock') # => 'Rock music'
+    Song.humanized_genre('rock') # => 'Rock music'
 
 You can obtain a list of all assignable values with their humanizations:
 

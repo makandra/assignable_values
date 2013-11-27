@@ -5,13 +5,14 @@ module AssignableValues
 
         def initialize(*args)
           super
-          define_humanized_value_method
-          define_humanized_values_method
+          define_humanized_value_instance_method
+          define_humanized_value_class_method
+          define_humanized_values_instance_method
         end
 
         def humanized_value(values, value) # we take the values because that contains the humanizations in case humanizations are hard-coded as a hash
           if value.present?
-            if values.respond_to?(:humanizations)
+            if values && values.respond_to?(:humanizations)
               values.humanizations[value]
             else
               dictionary_scope = "assignable_values.#{model.name.underscore}.#{property}"
@@ -46,7 +47,16 @@ module AssignableValues
           end
         end
 
-        def define_humanized_value_method
+        def define_humanized_value_class_method
+          restriction = self
+          enhance_model_singleton do
+            define_method "humanized_#{restriction.property}" do |given_value|
+              restriction.humanized_value(nil, given_value)
+            end
+          end
+        end
+
+        def define_humanized_value_instance_method
           restriction = self
           enhance_model do
             define_method "humanized_#{restriction.property}" do |*args|
@@ -58,7 +68,7 @@ module AssignableValues
           end
         end
 
-        def define_humanized_values_method
+        def define_humanized_values_instance_method
           restriction = self
           enhance_model do
             define_method "humanized_#{restriction.property.to_s.pluralize}" do

@@ -127,6 +127,10 @@ module AssignableValues
           options[:through]
         end
 
+        def enhance_model_singleton(&block)
+          @model.singleton_class.class_eval(&block)
+        end
+
         def enhance_model(&block)
           @model.class_eval(&block)
         end
