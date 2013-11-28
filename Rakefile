@@ -8,7 +8,7 @@ task :default => 'all:spec'
 namespace :travis_ci do
 
   desc 'Things to do before Travis CI begins'
-  task :prepare => :slimgems do
+  task :prepare => [:disable_rubygems_bundler, :slimgems] do
     puts "Output of Bundler.rubygems.plain_specs:"
     p Bundler.rubygems.plain_specs
     puts
@@ -18,6 +18,12 @@ namespace :travis_ci do
   task :slimgems do
     system('gem install slimgems')
   end
+
+  describe 'Disable rubygems-bundler magic'
+  task :disable_rubygems_bundler do
+    system('export NOEXEC_DISABLE=1')
+  end
+
 
 end
 
