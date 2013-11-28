@@ -9,6 +9,9 @@ namespace :travis_ci do
 
   desc 'Things to do before Travis CI begins'
   task :prepare => :slimgems do
+    puts "Output of Bundler.rubygems.plain_specs:"
+    p Bundler.rubygems.plain_specs
+    puts
   end
 
   desc 'Install slimgems'
