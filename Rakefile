@@ -21,9 +21,8 @@ namespace :travis_ci do
 
   describe 'Disable rubygems-bundler magic'
   task :disable_rubygems_bundler do
-    system('export NOEXEC_DISABLE=1')
+    ENV['NOEXEC_DISABLE'] = '1'
   end
-
 
 end
 
