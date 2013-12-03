@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    assignable_values (0.7.2)
+    assignable_values (0.8.1)
       activerecord
 
 GEM

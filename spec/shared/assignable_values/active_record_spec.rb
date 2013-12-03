@@ -186,6 +186,18 @@ describe AssignableValues::ActiveRecord do
         error.should == I18n.t('errors.messages.inclusion')
       end
 
+      it 'uses the defined foreign key of the association' do
+        klass = Song.disposable_copy do
+          belongs_to :creator, :foreign_key => 'artist_id', :class_name => 'Artist'
+
+          assignable_values_for :creator do
+            []
+          end
+        end
+
+        klass.new(:creator => Artist.new).should have(1).error_on(:artist_id)
+      end
+
       it 'should allow a nil association if the :allow_blank option is set' do
         klass = Song.disposable_copy do
           assignable_values_for :artist, :allow_blank => true do

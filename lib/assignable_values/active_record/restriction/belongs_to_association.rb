@@ -10,7 +10,12 @@ module AssignableValues
         end
 
         def association_id_method
-          "#{property}_id"
+          association = model.reflect_on_association(property)
+          if association.respond_to?(:foreign_key)
+            association.foreign_key # Rails >= 3.1
+          else
+            association.primary_key_name # Rails 2 + 3.0
+          end
         end
 
         def error_property
