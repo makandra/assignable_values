@@ -12,3 +12,4 @@ notifications:
 branches:
   only:
     - master
+    - travis-testing
