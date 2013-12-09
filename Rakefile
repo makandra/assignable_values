@@ -5,20 +5,14 @@ desc 'Default: Run all specs.'
 task :default => 'all:spec'
 
 
-namespace :travis_ci do
-
-  desc 'Things to do before Travis CI begins'
-  task :prepare => [:disable_rubygems_bundler, :slimgems] do
-  end
+namespace :travis do
+  
+  desc 'Run tests on Travis CI'
+  task :run => ['slimgems', 'all:bundle:install', 'all:spec']
 
   desc 'Install slimgems'
   task :slimgems do
     system('gem install slimgems')
-  end
-
-  desc 'Disable rubygems-bundler magic'
-  task :disable_rubygems_bundler do
-    ENV['NOEXEC_DISABLE'] = '1'
   end
 
 end
@@ -40,14 +34,18 @@ namespace :all do
     desc "Bundle all spec apps"
     task :install do
       for_each_directory_of('spec/**/Gemfile') do |directory|
-        system("cd #{directory} && bundle install")
+        Bundler.with_clean_env do
+          system("cd #{directory} && bundle install")
+        end
       end
     end
 
     desc "Update all gems, or a list of gem given by the GEM environment variable"
     task :update do
       for_each_directory_of('spec/**/Gemfile') do |directory|
-        system("cd #{directory} && bundle update #{ENV['GEM']}")
+        Bundler.with_clean_env do
+          system("cd #{directory} && bundle update #{ENV['GEM']}")
+        end
       end
     end
 

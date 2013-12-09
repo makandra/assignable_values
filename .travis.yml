@@ -5,8 +5,7 @@ rvm:
   - ree
 services:
   - mysql
-before_script: rake travis_ci:prepare
-script: rake all:bundle:install all:spec
+script: rake travis:run
 notifications:
   email:
     - fail@makandra.de
