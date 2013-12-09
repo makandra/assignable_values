@@ -37,7 +37,7 @@ GEM
     arel (2.0.10)
     builder (2.1.2)
     columnize (0.3.6)
-    debugger (1.6.1)
+    debugger (1.6.3)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.2.0)
       debugger-ruby_core_source (~> 1.2.3)
