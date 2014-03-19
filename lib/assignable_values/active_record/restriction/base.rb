@@ -92,7 +92,7 @@ module AssignableValues
         end
 
         def parse_values(values)
-          { :values => values.to_a }
+          { :values => Array(values) }
         end
 
         def current_value(record)
