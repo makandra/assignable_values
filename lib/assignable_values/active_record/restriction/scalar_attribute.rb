@@ -89,7 +89,10 @@ module AssignableValues
         end
 
         def previously_saved_value(record)
-          record.send("#{property}_was")
+          was_method_name = "#{property}_was"
+          if record.respond_to?(was_method_name)
+            record.send(was_method_name)
+          end
         end
 
       end

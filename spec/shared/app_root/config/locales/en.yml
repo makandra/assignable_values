@@ -12,6 +12,9 @@ en:
       genre:
         pop: 'Pop music'
         rock: 'Rock music'
+      sub_genre:
+        pop: 'Pop music'
+        rock: 'Rock music'
       year:
         '1977': 'The year a new hope was born'
         '1980': 'The year the Empire stroke back'

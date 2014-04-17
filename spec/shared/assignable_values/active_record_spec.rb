@@ -13,6 +13,32 @@ describe AssignableValues::ActiveRecord do
       end.to raise_error(AssignableValues::NoValuesGiven)
     end
 
+    context 'when validation virtual attributes' do
+
+      before :each do
+        @klass = Song.disposable_copy do
+          assignable_values_for :sub_genre do
+            %w[pop rock]
+          end
+        end
+      end
+
+      it 'should validate that the attribute is allowed' do
+        @klass.new(:sub_genre => 'pop').should be_valid
+        @klass.new(:sub_genre => 'disallowed value').should_not be_valid
+      end
+
+      it 'should not allow nil for the attribute value' do
+        @klass.new(:sub_genre => nil).should_not be_valid
+      end
+
+      it 'should generate a method returning the humanized value' do
+        song = @klass.new(:sub_genre => 'pop')
+        song.humanized_sub_genre.should == 'Pop music'
+      end
+
+    end
+
     context 'when validating scalar attributes' do
 
       context 'without options' do
