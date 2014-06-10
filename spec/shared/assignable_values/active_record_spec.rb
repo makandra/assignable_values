@@ -13,7 +13,7 @@ describe AssignableValues::ActiveRecord do
       end.to raise_error(AssignableValues::NoValuesGiven)
     end
 
-    context 'when validation virtual attributes' do
+    context 'when validating virtual attributes' do
 
       before :each do
         @klass = Song.disposable_copy do
@@ -70,9 +70,23 @@ describe AssignableValues::ActiveRecord do
         end
 
         it 'should allow a previously saved value even if that value is no longer allowed' do
-          record = @klass.create!(:genre => 'pop')
-          @klass.update_all(:genre => 'disallowed value') # update without validations for the sake of this test
+          record = @klass.create!(:genre => 'rock')
+          @klass.class_eval do
+            assignable_values_for :genre do
+              ['pop']
+            end
+          end
           record.reload.should be_valid
+        end
+
+        it 'should allow omitting previously saved values when queried explicitly' do
+          record = @klass.create!(:genre => 'rock')
+          @klass.class_eval do
+            assignable_values_for :genre do
+              ['pop']
+            end
+          end
+          record.assignable_genres(:include_stored_value => false).should =~ ['pop']
         end
 
         it 'should generate a method returning the humanized value' do
@@ -246,6 +260,20 @@ describe AssignableValues::ActiveRecord do
           end
         end
         record.should be_valid
+      end
+
+      it 'should allow omitting a previously saved association when queried explicitly' do
+        allowed_association = Artist.create!
+        disallowed_association = Artist.create!
+        klass = Song.disposable_copy
+
+        record = klass.create!(:artist => disallowed_association)
+        klass.class_eval do
+          assignable_values_for :artist do
+            [allowed_association]
+          end
+        end
+        record.assignable_artists(:include_stored_value => false).should =~ [allowed_association]
       end
 
       it "should not load a previously saved association if the association's foreign key hasn't changed" do
