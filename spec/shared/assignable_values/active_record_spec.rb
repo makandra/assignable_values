@@ -13,7 +13,7 @@ describe AssignableValues::ActiveRecord do
       end.to raise_error(AssignableValues::NoValuesGiven)
     end
 
-    context 'when validation virtual attributes' do
+    context 'when validating virtual attributes' do
 
       before :each do
         @klass = Song.disposable_copy do
@@ -71,7 +71,7 @@ describe AssignableValues::ActiveRecord do
 
         it 'should allow a previously saved value even if that value is no longer allowed' do
           record = @klass.create!(:genre => 'pop')
-          @klass.update_all(:genre => 'disallowed value') # update without validations for the sake of this test
+          @klass.update_all(:genre => 'pretend previously valid value') # update without validations for the sake of this test
           record.reload.should be_valid
         end
 
@@ -514,6 +514,31 @@ describe AssignableValues::ActiveRecord do
         end
         record = klass.create!(:genre => 'rock')
         record.assignable_genres.should == %w[pop rock]
+      end
+
+      it 'should allow omitting a previously saved value' do
+        klass = Song.disposable_copy do
+          assignable_values_for :genre do
+            %w[pop rock]
+          end
+        end
+        record = klass.create!(:genre => 'pop')
+        klass.update_all(:genre => 'ballad') # update without validation for the sake of this test
+        record.reload.assignable_genres(:include_old_value => false).should == %w[pop rock]
+      end
+
+      it 'should allow omitting a previously saved association' do
+        allowed_association = Artist.create!
+        disallowed_association = Artist.create!
+        klass = Song.disposable_copy
+
+        record = klass.create!(:artist => disallowed_association)
+        klass.class_eval do
+          assignable_values_for :artist do
+            [allowed_association]
+          end
+        end
+        record.assignable_artists(:include_old_value => false).should =~ [allowed_association]
       end
 
       context 'humanization' do

@@ -158,11 +158,15 @@ If a value has been saved before, it will remain valid, even if it is no longer 
 
 It will also be returned when obtaining the list of assignable values:
 
-    song.assignable_genres # => [2010, 2011, 2012, 1985]
+    song.assignable_years # => [2010, 2011, 2012, 1985]
+
+However, if you want only those values that are actually intended to be assignable, e.g. when updating a `<select>` via AJAX, pass an option:
+
+    song.assignable_years(include_stored_value: false) # => [2010, 2011, 2012]
 
 Once a changed value has been saved, the previous value disappears from the list of assignable values:
 
-    song.genre = 'pop'
+    song.year = '2010'
     song.save!
     song.assignable_years # => [2010, 2011, 2012]
     song.year = 1985
@@ -176,7 +180,7 @@ Restricting belongs_to associations
 
 You can restrict `belongs_to` associations in the same manner as scalar attributes:
 
-    class Song
+    class Song < ActiveRecord::Base
 
       belongs_to :artist
 
@@ -202,7 +206,7 @@ Listing and validating als works the same:
     song.valid? # => false
 
 Similiar to scalar attributes, associations are only validated when the foreign key (`artist_id` in the example above) changes.
-Previously saved values will remain assignable until another association has been saved.
+Values stored in the database will remain assignable until they are changed, and you can query actually assignable values with `song.assignable_artists(include_stored_value: false)`.
 
 Validation errors will be attached to the association's foreign key (`artist_id` in the example above).
 
