@@ -1,4 +1,1 @@
-test:
-  adapter: sqlite3
-  database: ":memory:"
-  verbosity: quiet
+../../../shared/app_root/config/database.yml
