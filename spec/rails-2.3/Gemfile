@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 
+Deprecate.skip = true if defined?(Deprecate.skip)
+Gem::Deprecate.skip = true if defined?(Gem::Deprecate.skip)
+
 gem 'sqlite3'
 gem 'test-unit', '=1.2.3', :platforms => :ruby_19
 gem 'hoe', '=2.8.0', :platforms => :ruby_19
