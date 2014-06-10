@@ -45,19 +45,23 @@ module AssignableValues
           assignable_values(record).include?(value)
         end
 
-        def assignable_values(record, decorate = false)
+        def assignable_values(record, options = {})
           assignable_values = []
           parsed_values = parsed_assignable_values(record)
           current_values = parsed_values.delete(:values)
-          old_value = previously_saved_value(record)
-          if old_value.present? && !current_values.include?(old_value)
-            assignable_values << old_value
+
+          if options.fetch(:include_stored_value, true)
+            old_value = previously_saved_value(record)
+            if old_value.present? && !current_values.include?(old_value)
+              assignable_values << old_value
+            end
           end
+
           assignable_values += current_values
           parsed_values.each do |meta_name, meta_content|
             assignable_values.singleton_class.send(:define_method, meta_name) { meta_content }
           end
-          if decorate
+          if options[:decorate]
             assignable_values = decorate_values(assignable_values)
           end
           assignable_values
@@ -179,8 +183,11 @@ module AssignableValues
           restriction = self
           enhance_model do
             assignable_values_method = "assignable_#{restriction.property.to_s.pluralize}"
-            define_method assignable_values_method do
-              restriction.assignable_values(self, true)
+            define_method assignable_values_method do |*args|
+              # Ruby 1.8.7 does not support optional block arguments :(
+              options = args.first || {}
+              options.merge!({:decorate => true})
+              restriction.assignable_values(self, options)
             end
           end
         end
