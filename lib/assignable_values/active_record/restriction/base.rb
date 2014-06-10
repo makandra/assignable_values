@@ -183,7 +183,9 @@ module AssignableValues
           restriction = self
           enhance_model do
             assignable_values_method = "assignable_#{restriction.property.to_s.pluralize}"
-            define_method assignable_values_method do |options = {}|
+            define_method assignable_values_method do |*args|
+              # Ruby 1.8.7 does not support optional block arguments :(
+              options = args.first || {}
               options.merge!({:decorate => true})
               restriction.assignable_values(self, options)
             end
