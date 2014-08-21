@@ -65,7 +65,7 @@ module AssignableValues
             next unless value
             enhance_model_singleton do
               define_method "#{value}" do
-                restriction.where(restriction.property => value)
+                restriction.model.where(restriction.property => value)
               end
             end
           end

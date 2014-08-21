@@ -130,6 +130,8 @@ describe AssignableValues::ActiveRecord do
         end
 
         it 'should define proper methods' do
+          @klass.should respond_to :pop
+          @klass.should respond_to :rock
           @klass.new.should respond_to :pop?
           @klass.new.should respond_to :rock?
         end
