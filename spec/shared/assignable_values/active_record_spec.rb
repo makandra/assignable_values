@@ -119,6 +119,31 @@ describe AssignableValues::ActiveRecord do
 
       end
 
+      context 'if the :status option is set to true' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+            assignable_values_for :genre, :status => true do
+              %w[pop rock]
+            end
+          end
+        end
+
+        it 'should define proper methods' do
+          @klass.should respond_to :pop
+          @klass.should respond_to :rock
+          @klass.new.should respond_to :pop?
+          @klass.new.should respond_to :rock?
+        end
+
+        it 'should work properly' do
+          @klass.new(:genre => 'pop').pop?.should   == true
+          @klass.new(:genre => 'rock').pop?.should  == false
+          @klass.new(:genre => 'rock').rock?.should == true
+          @klass.new(:genre => 'pop').rock?.should  == false
+        end
+      end
+
       context 'if the :allow_blank option is set to a symbol that refers to an instance method' do
 
         before :each do

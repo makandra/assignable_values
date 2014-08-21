@@ -6,14 +6,15 @@ module AssignableValues
         attr_reader :model, :property, :options, :values, :default, :secondary_default
 
         def initialize(model, property, options, &values)
-          @model = model
+          @model    = model
           @property = property
-          @options = options
-          @values = values
+          @options  = options
+          @values   = values
           ensure_values_given
           setup_default
           define_assignable_values_method
           setup_validation
+          define_status_methods
         end
 
         def validate_record(record)
@@ -127,6 +128,10 @@ module AssignableValues
           evaluate_option(record, @options[:allow_blank])
         end
 
+        def statusable?
+          @options[:status]
+        end
+
         def delegate_definition
           options[:through]
         end
@@ -137,6 +142,10 @@ module AssignableValues
 
         def enhance_model(&block)
           @model.class_eval(&block)
+        end
+
+        def enhance_instance(&block)
+          @model.instance_eval(&block)
         end
 
         def setup_default
@@ -177,6 +186,26 @@ module AssignableValues
             end
             validate validate_method
           end
+        end
+
+        def define_status_methods
+          return unless statusable?
+          collisions = model.methods & status_method_array(self)
+          if collisions.present?
+            raise MethodCollision, "Status assignment collision(s): #{collisions*', '}"
+          end
+        end
+
+        def status_method_array(record)
+          parsed_values(record) + query_methods(record)
+        end
+
+        def query_methods(record)
+          parsed_values(record).map{ |x| x+'?' }
+        end
+
+        def parsed_values(record)
+          parsed_assignable_values(record)[:values]
         end
 
         def define_assignable_values_method
