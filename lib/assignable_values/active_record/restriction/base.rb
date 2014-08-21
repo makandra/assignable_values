@@ -210,7 +210,7 @@ module AssignableValues
           parsed_values(record).each do |value|
             enhance_instance do
               define_method "#{value}?" do
-                self.send(property.to_sym) == value
+                record.send(property.to_sym) == value
               end
             end
           end
