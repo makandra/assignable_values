@@ -75,6 +75,18 @@ describe AssignableValues::ActiveRecord do
           record.reload.should be_valid
         end
 
+        it 'should allow a previously saved, blank value even if that value is no longer allowed' do
+          record = @klass.create!(:genre => 'pop')
+          @klass.update_all(:genre => '') # update without validations for the sake of this test
+          record.reload.should be_valid
+        end
+
+        it 'should not allow nil (the "previous value") if the record was never saved' do
+          record = @klass.new(:genre => nil)
+          # Show that nil is not assignable, even though `record.genre_was` is nil.
+          record.should_not be_valid
+        end
+
         it 'should generate a method returning the humanized value' do
           song = @klass.new(:genre => 'pop')
           song.humanized_genre.should == 'Pop music'
@@ -235,7 +247,7 @@ describe AssignableValues::ActiveRecord do
         record.should be_valid
       end
 
-      it 'should allow a previously saved association even if that association is no longer allowed' do
+      it 'should allow a previously saved association, even if that association is no longer allowed' do
         allowed_association = Artist.create!
         disallowed_association = Artist.create!
         klass = Song.disposable_copy
@@ -246,6 +258,30 @@ describe AssignableValues::ActiveRecord do
           end
         end
         record.should be_valid
+      end
+
+      it 'should allow nil for an association if the record was saved before with a nil association' do
+        allowed_association = Artist.create!
+        klass = Song.disposable_copy
+        record = klass.create!(:artist => nil)
+        klass.class_eval do
+          assignable_values_for :artist do
+            [allowed_association]
+          end
+        end
+        record.should be_valid
+      end
+
+      it 'sould not allow nil for an association (the "previously saved value") if the record is new' do
+        allowed_association = Artist.create!
+        klass = Song.disposable_copy
+        record = klass.new(:artist => nil)
+        klass.class_eval do
+          assignable_values_for :artist do
+            [allowed_association]
+          end
+        end
+        record.should_not be_valid
       end
 
       it "should not load a previously saved association if the association's foreign key hasn't changed" do
@@ -516,7 +552,29 @@ describe AssignableValues::ActiveRecord do
         record.assignable_genres.should == %w[pop rock]
       end
 
-      it 'should allow omitting a previously saved value' do
+      it 'should prepend a previously saved blank value to the top of the list, even if is no longer allowed' do
+        klass = Song.disposable_copy do
+          assignable_values_for :genre do
+            %w[pop rock]
+          end
+        end
+        record = klass.create!(:genre => 'pop')
+        klass.update_all(:genre => '') # update without validation for the sake of this test
+        record.reload.assignable_genres.should == ['', 'pop', 'rock']
+      end
+
+      it 'should not prepend nil to the top of the list if the record was never saved' do
+        klass = Song.disposable_copy do
+          assignable_values_for :genre do
+            %w[pop rock]
+          end
+        end
+        record = klass.new(:genre => 'pop')
+        record.genre_was.should be_nil
+        record.assignable_genres.should == ['pop', 'rock']
+      end
+
+      it 'should allow omitting a previously saved value with :include_old_value => false option' do
         klass = Song.disposable_copy do
           assignable_values_for :genre do
             %w[pop rock]

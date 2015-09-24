@@ -50,9 +50,9 @@ module AssignableValues
           parsed_values = parsed_assignable_values(record)
           current_values = parsed_values.delete(:values)
 
-          if options.fetch(:include_old_value, true)
+          if options.fetch(:include_old_value, true) && has_previously_saved_value?(record)
             old_value = previously_saved_value(record)
-            if old_value.present? && !current_values.include?(old_value)
+            unless current_values.include?(old_value)
               assignable_values << old_value
             end
           end
@@ -103,8 +103,12 @@ module AssignableValues
           record.send(property)
         end
 
+        def has_previously_saved_value?(record)
+          raise NotImplementedError
+        end
+
         def previously_saved_value(record)
-          nil
+          raise NotImplementedError
         end
 
         def decorate_values(values)

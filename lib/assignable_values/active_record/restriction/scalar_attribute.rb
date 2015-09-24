@@ -88,11 +88,18 @@ module AssignableValues
           end
         end
 
+        def has_previously_saved_value?(record)
+          !record.new_record? && record.respond_to?(value_was_method)
+        end
+
         def previously_saved_value(record)
-          was_method_name = "#{property}_was"
-          if record.respond_to?(was_method_name)
-            record.send(was_method_name)
-          end
+          record.send(value_was_method)
+        end
+
+        private
+
+        def value_was_method
+          "#{property}_was"
         end
 
       end
