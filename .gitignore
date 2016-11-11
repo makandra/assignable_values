@@ -3,3 +3,4 @@ pkg
 *.gem
 .idea
 spec/*/log/*
+spec/support/database.yml

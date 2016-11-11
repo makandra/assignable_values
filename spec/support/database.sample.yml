@@ -1,0 +1,5 @@
+mysql:
+  database: assignable_values_test
+  host: localhost
+  username: root
+  password: secret
