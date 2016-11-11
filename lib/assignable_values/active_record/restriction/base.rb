@@ -152,7 +152,7 @@ module AssignableValues
             ensure_after_initialize_callback_enabled
             restriction = self
             enhance_model do
-              set_default_method = "set_default_#{restriction.property}"
+              set_default_method = :"set_default_#{restriction.property}"
               define_method set_default_method do
                 restriction.set_default(self)
               end
@@ -177,7 +177,7 @@ module AssignableValues
         def setup_validation
           restriction = self
           enhance_model do
-            validate_method = "validate_#{restriction.property}_assignable"
+            validate_method = :"validate_#{restriction.property}_assignable"
             define_method validate_method do
               restriction.validate_record(self)
             end
@@ -188,7 +188,7 @@ module AssignableValues
         def define_assignable_values_method
           restriction = self
           enhance_model do
-            assignable_values_method = "assignable_#{restriction.property.to_s.pluralize}"
+            assignable_values_method = :"assignable_#{restriction.property.to_s.pluralize}"
             define_method assignable_values_method do |*args|
               # Ruby 1.8.7 does not support optional block arguments :(
               options = args.first || {}
@@ -223,7 +223,7 @@ module AssignableValues
         def assignable_values_from_delegate(record)
           delegate = delegate(record)
           delegate.present? or raise DelegateUnavailable, "Cannot query a nil delegate for assignable values"
-          delegate_query_method = "assignable_#{model.name.underscore.gsub('/', '_')}_#{property.to_s.pluralize}"
+          delegate_query_method = :"assignable_#{model.name.underscore.gsub('/', '_')}_#{property.to_s.pluralize}"
           args = delegate.method(delegate_query_method).arity == 1 ? [record] : []
           delegate.send(delegate_query_method, *args)
         end

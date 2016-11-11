@@ -1,0 +1,67 @@
+PATH
+  remote: ..
+  specs:
+    assignable_values (0.11.3)
+      activerecord (>= 2.3)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activemodel (5.0.0.1)
+      activesupport (= 5.0.0.1)
+    activerecord (5.0.0.1)
+      activemodel (= 5.0.0.1)
+      activesupport (= 5.0.0.1)
+      arel (~> 7.0)
+    activesupport (5.0.0.1)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (~> 0.7)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+    arel (7.1.4)
+    concurrent-ruby (1.0.2)
+    database_cleaner (1.5.3)
+    diff-lcs (1.2.5)
+    gemika (0.3.2)
+    i18n (0.7.0)
+    minitest (5.9.1)
+    mysql2 (0.4.5)
+    rake (11.3.0)
+    rspec (3.5.0)
+      rspec-core (~> 3.5.0)
+      rspec-expectations (~> 3.5.0)
+      rspec-mocks (~> 3.5.0)
+    rspec-core (3.5.4)
+      rspec-support (~> 3.5.0)
+    rspec-expectations (3.5.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.5.0)
+    rspec-mocks (3.5.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.5.0)
+    rspec-support (3.5.0)
+    rspec_candy (0.4.1)
+      rspec
+      sneaky-save
+    sneaky-save (0.1.2)
+      activerecord (>= 3.2.0)
+    thread_safe (0.3.5)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  activerecord (~> 5.0.0)
+  assignable_values!
+  database_cleaner
+  gemika
+  i18n
+  mysql2
+  rake
+  rspec
+  rspec_candy
+
+BUNDLED WITH
+   1.12.5

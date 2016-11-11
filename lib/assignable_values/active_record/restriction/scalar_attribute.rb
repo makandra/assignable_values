@@ -50,7 +50,7 @@ module AssignableValues
         def define_humanized_value_class_method
           restriction = self
           enhance_model_singleton do
-            define_method "humanized_#{restriction.property}" do |given_value|
+            define_method :"humanized_#{restriction.property}" do |given_value|
               restriction.humanized_value(nil, given_value)
             end
           end
@@ -59,7 +59,7 @@ module AssignableValues
         def define_humanized_value_instance_method
           restriction = self
           enhance_model do
-            define_method "humanized_#{restriction.property}" do |*args|
+            define_method :"humanized_#{restriction.property}" do |*args|
               values = restriction.assignable_values(self)
               given_value = args[0]
               value = given_value || send(restriction.property)
@@ -71,7 +71,7 @@ module AssignableValues
         def define_humanized_values_instance_method
           restriction = self
           enhance_model do
-            define_method "humanized_#{restriction.property.to_s.pluralize}" do
+            define_method :"humanized_#{restriction.property.to_s.pluralize}" do
               restriction.humanized_values(self)
             end
           end
@@ -99,7 +99,7 @@ module AssignableValues
         private
 
         def value_was_method
-          "#{property}_was"
+          :"#{property}_was"
         end
 
       end

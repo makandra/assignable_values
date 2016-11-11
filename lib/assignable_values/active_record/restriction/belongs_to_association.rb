@@ -49,7 +49,7 @@ module AssignableValues
         private
 
         def association_id_was_method
-          "#{association_id_method}_was"
+          :"#{association_id_method}_was"
         end
 
       end
