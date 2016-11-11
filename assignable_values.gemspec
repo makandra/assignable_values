@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.authors = ["Henning Koch"]
   s.email = 'henning.koch@makandra.de'
   s.homepage = 'https://github.com/makandra/assignable_values'
-  s.summary = 'Restrict the values assignable to ActiveRecord attributes or associations. Or enums on steroids.'
+  s.summary = 'Restrict the values assignable to ActiveRecord attributes or associations'
   s.description = s.summary
   s.license = 'MIT'
 
@@ -15,10 +15,5 @@ Gem::Specification.new do |s|
   s.test_files    = s.files.grep(%r{^spec/})
   s.require_paths = ["lib"]
 
-  s.add_dependency('activerecord')
-
-  s.add_development_dependency('rails', '~>3.1')
-  s.add_development_dependency('rspec', '~>2.8')
-  s.add_development_dependency('rspec-rails', '~>2.8')
-  s.add_development_dependency('sqlite3')
+  s.add_dependency('activerecord', '>=2.3')
 end
