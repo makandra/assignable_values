@@ -332,9 +332,20 @@ Now run `bundle install` and restart your server. Done.
 Development
 -----------
 
-- Fork the repository.
-- Push your changes with specs. There is a Rails 3 test application in `spec/app_root` if you need to test integration with a live Rails app.
-- Send me a pull request.
+There are tests in `spec`. We only accept PRs with tests. To run tests:
+
+- Install Ruby 2.1.8
+- Create a local test database `assignable_values_test` in both MySQL and PostgreSQL
+- Copy `spec/support/database.sample.yml` to `spec/support/database.yml` and enter your local credentials for the test database
+- Install development dependencies using `bundle install`
+- Run tests using `bundle exec rspec`
+
+We recommend to test large changes against multiple versions of Ruby and multiple dependency sets. Supported combinations are configured in `.travis.yml`. We provide some rake tasks to help with this:
+
+- Install development dependencies using `bundle matrix:install`
+- Run tests using `bundle matrix:spec`
+
+Note that we have configured Travis CI to automatically run tests in all supported Ruby versions and dependency sets after each push. We will only merge pull requests after a green Travis build.
 
 I'm very eager to keep this gem leightweight and on topic. If you're unsure whether a change would make it into the gem, [talk to me beforehand](mailto:henning.koch@makandra.de).
 
