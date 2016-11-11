@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    assignable_values (0.11.1)
+    assignable_values (0.11.2)
       activerecord
 
 GEM
@@ -127,3 +127,6 @@ DEPENDENCIES
   rspec_candy
   ruby-debug
   sqlite3
+
+BUNDLED WITH
+   1.12.5
