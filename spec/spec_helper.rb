@@ -7,6 +7,7 @@ require 'assignable_values'
 require 'rspec_candy/all'
 require 'gemika'
 
+I18n.enforce_available_locales = true
 I18n.load_path = [File.join(File.dirname(__FILE__), 'support/i18n.yml')]
 I18n.default_locale = :en
 
