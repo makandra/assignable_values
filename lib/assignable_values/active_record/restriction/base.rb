@@ -42,7 +42,9 @@ module AssignableValues
         end
 
         def assignable_value?(record, value)
-          assignable_values(record).include?(value)
+          (has_previously_saved_value?(record) && value == previously_saved_value(record))  ||
+            (value.blank? && allow_blank?(record)) ||
+            assignable_values(record).include?(value)
         end
 
         def assignable_values(record, options = {})
@@ -52,7 +54,7 @@ module AssignableValues
 
           if options.fetch(:include_old_value, true) && has_previously_saved_value?(record)
             old_value = previously_saved_value(record)
-            unless current_values.include?(old_value)
+            unless old_value.blank? || current_values.include?(old_value)
               assignable_values << old_value
             end
           end

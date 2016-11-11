@@ -27,11 +27,11 @@ module AssignableValues
         end
 
         def has_previously_saved_value?(record)
-          !record.new_record? && record.respond_to?(value_was_method)
+          !record.new_record? && record.respond_to?(association_id_was_method)
         end
 
         def previously_saved_value(record)
-          if old_id = record.send(value_was_method).presence
+          if old_id = record.send(association_id_was_method).presence
             if old_id == association_id(record)
               current_value(record) # no need to query the database if nothing changed
             else
@@ -48,7 +48,7 @@ module AssignableValues
 
         private
 
-        def value_was_method
+        def association_id_was_method
           "#{association_id_method}_was"
         end
 

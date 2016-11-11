@@ -552,7 +552,7 @@ describe AssignableValues::ActiveRecord do
         record.assignable_genres.should == %w[pop rock]
       end
 
-      it 'should prepend a previously saved blank value to the top of the list, even if is no longer allowed' do
+      it "should not prepend a previously saved blank value to the top of the list (because our forms already have collection_select with include_blank: '<prompt>')" do
         klass = Song.disposable_copy do
           assignable_values_for :genre do
             %w[pop rock]
@@ -560,7 +560,7 @@ describe AssignableValues::ActiveRecord do
         end
         record = klass.create!(:genre => 'pop')
         klass.update_all(:genre => '') # update without validation for the sake of this test
-        record.reload.assignable_genres.should == ['', 'pop', 'rock']
+        record.reload.assignable_genres.should == ['pop', 'rock']
       end
 
       it 'should not prepend nil to the top of the list if the record was never saved' do
@@ -597,6 +597,23 @@ describe AssignableValues::ActiveRecord do
           end
         end
         record.assignable_artists(:include_old_value => false).should =~ [allowed_association]
+      end
+
+      context 'if the :allow_blank option is set to true' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+            assignable_values_for :genre, :allow_blank => true do
+              %w[pop rock]
+            end
+          end
+        end
+
+        it "should not prepend nil to the list for an unsaved record (because we'd rather use include_blank: '<prompt>' in collection_select)" do
+          record = @klass.new
+          record.assignable_genres.should == ['pop', 'rock']
+        end
+
       end
 
       context 'humanization' do
