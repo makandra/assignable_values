@@ -1,7 +1,7 @@
 language: ruby
 rvm:
   - "1.8.7"
-  - "2.1.0"
+  - "2.1.8"
 services:
   - mysql
 script: rake travis:run
