@@ -34,6 +34,9 @@ notifications:
   email:
     - fail@makandra.de
 
+before_script:
+  - mysql -e 'create database IF NOT EXISTS assignable_values_test;'
+
 install:
   # Old Travis CI bundler explodes when lockfile version doesn't match recently bumped version
   - gem install bundler --version='=1.12.5'
