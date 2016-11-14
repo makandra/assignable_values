@@ -164,7 +164,7 @@ module AssignableValues
         end
 
         def ensure_after_initialize_callback_enabled
-          if Gemika::Env.gem?('activerecord', '<3')
+          if active_record_2?
             enhance_model do
               # Old ActiveRecord version only call after_initialize callbacks only if this method is defined in a class.
               unless method_defined?(:after_initialize)
@@ -172,6 +172,10 @@ module AssignableValues
               end
             end
           end
+        end
+
+        def active_record_2?
+          ::ActiveRecord::VERSION::MAJOR < 3
         end
 
         def setup_validation
