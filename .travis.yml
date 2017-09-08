@@ -36,6 +36,7 @@ notifications:
 
 before_script:
   - mysql -e 'create database IF NOT EXISTS assignable_values_test;'
+  - mysql -e "GRANT ALL PRIVILEGES ON assignable_values_test.* TO 'travis'@'%';"
 
 install:
   # Old Travis CI bundler explodes when lockfile version doesn't match recently bumped version
