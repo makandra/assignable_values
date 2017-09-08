@@ -373,14 +373,20 @@ describe AssignableValues::ActiveRecord do
         klass.new.assignable_years.should == [1977, 1980, 1983]
       end
 
-      it 'should skip the validation if that method returns nil' do
-        klass = Song.disposable_copy do
-          assignable_values_for :genre, :through => :delegate
-          def delegate
-            nil
+      context 'when the delegation method returns nil' do
+        let(:klass) do
+          Song.disposable_copy do
+            assignable_values_for :genre, :through => proc { nil }
           end
         end
-        klass.new(:genre => 'pop').should be_valid
+
+        it 'should skip the validation' do
+          klass.new(:genre => 'pop').should be_valid
+        end
+
+        it 'should still be able to humanize values on the instance' do
+          klass.new(:genre => 'pop').humanized_genre.should == 'Pop music'
+        end
       end
 
     end
@@ -650,30 +656,6 @@ describe AssignableValues::ActiveRecord do
           years = klass.new.humanized_years
           years.collect(&:value).should == [1977, 1980, 1983]
           years.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire stroke back', 'The year the Jedi returned']
-        end
-
-        context 'hardcoded humanizations' do
-
-          it 'should allow to directly declare humanized values by passing a hash to assignable_values_for' do
-            klass = Song.disposable_copy do
-              assignable_values_for :genre do
-                { 'pop' => 'Pop music', 'rock' => 'Rock music' }
-              end
-            end
-            klass.new.humanized_genres.collect(&:humanized).sort.should =~ ['Pop music', 'Rock music']
-          end
-
-          it "should correctly humanize values if the humanizations were declared using a hash, the values are not strings, and the list of humanized values hasn't been called before (bugfix)" do
-            klass = Song.disposable_copy do
-              assignable_values_for :duration do
-                { 60 => '1:00',
-                  90 => '1:30' }
-              end
-            end
-            klass.new(:duration => 60).humanized_duration.should == '1:00'
-            klass.new(:duration => 90).humanized_duration.should == '1:30'
-          end
-
         end
 
         it 'should properly look up humanizations for namespaced models' do

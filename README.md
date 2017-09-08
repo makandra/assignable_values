@@ -73,16 +73,6 @@ A good way to populate a `<select>` tag with pairs of internal values and human 
 
     form.collection_select :genre, form.object.humanized_genres, :value, :humanized
 
-If you don't like to use your I18n dictionary for humanizations, you can also declare them directly in your model like this:
-
-    class Song < ActiveRecord::Base
-      assignable_values_for :genre do
-        { 'pop' => 'Pop music',
-          'rock' => 'Rock music',
-          'electronic' => 'Electronic music' }
-      end
-    end
-
 
 ### Defining default values
 
