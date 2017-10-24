@@ -42,7 +42,7 @@ module AssignableValues
 
         def current_value(record)
           value = record.send(property)
-          value = value.reload if !value.nil? && (value && value.id) != association_id(record)
+          value = value.reload if !value.nil? && !value.new_record? && (value && value.id) != association_id(record)
           value
         end
 
