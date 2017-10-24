@@ -320,7 +320,6 @@ describe AssignableValues::ActiveRecord do
         record = klass.new
         record.stub(:artist => association, :artist_id => -1) # This is a stale association: The associated object's id doesn't match the foreign key. This can happen in Rails 2, not Rails 3.
         record.should_receive(:artist).ordered.and_return(association)
-        record.should_receive(:artist).ordered.with(true).and_return(association)
         record.valid?
       end
 

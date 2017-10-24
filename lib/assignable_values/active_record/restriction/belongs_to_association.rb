@@ -41,9 +41,7 @@ module AssignableValues
         end
 
         def current_value(record)
-          value = record.send(property)
-          value = record.send(property, true) if (value && value.id) != association_id(record)
-          value
+          record.send(property)
         end
 
         private
