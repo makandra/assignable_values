@@ -44,7 +44,7 @@ cache: bundler
 
 notifications:
   email:
-    - irmela@berlin-coding.de
+    - fail@makandra.de
 
 before_script:
   - mysql -e 'create database IF NOT EXISTS assignable_values_test;'
