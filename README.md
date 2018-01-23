@@ -21,8 +21,8 @@ The basic usage to restrict the values assignable to strings, integers, etc. is 
 
 The assigned value is checked during validation:
 
-    Song.new(:genre => 'rock').valid?     # => true
-    Song.new(:genre => 'elephant').valid? # => false
+    Song.new(genre: 'rock').valid?     # => true
+    Song.new(genre: 'elephant').valid? # => false
 
 The validation error message is the same as the one from `validates_inclusion_of` (`errors.messages.inclusion` in your I18n dictionary).
 You can also set a custom error message with the `:message` option.
@@ -79,7 +79,7 @@ A good way to populate a `<select>` tag with pairs of internal values and human 
 You can define a default value by using the `:default` option:
 
     class Song < ActiveRecord::Base
-      assignable_values_for :genre, :default => 'rock' do
+      assignable_values_for :genre, default: 'rock' do
         ['pop', 'rock', 'electronic']
       end
     end
@@ -91,7 +91,7 @@ The default is applied to new records:
 Defaults can be procs:
 
     class Song < ActiveRecord::Base
-      assignable_values_for :genre, :default => proc { Date.today.year } do
+      assignable_values_for :genre, default: proc { Date.today.year } do
         1980 .. 2011
       end
     end
@@ -101,7 +101,7 @@ The proc will be evaluated in the context of the record instance.
 You can also default a secondary default that is only set if the primary default value is not assignable:
 
     class Song < ActiveRecord::Base
-      assignable_values_for :year, :default => 1999, :secondary_default => lambda { Date.today.year } do
+      assignable_values_for :year, default: 1999, secondary_default: proc { Date.today.year } do
         (Date.today.year - 2) .. Date.today.year
       end
     end
@@ -119,14 +119,14 @@ will get a validation error.
 If you would like to change this behavior and allow blank values to be valid, use the `:allow_blank` option:
 
     class Song < ActiveRecord::Base
-      assignable_values_for :genre, :default => 'rock', :allow_blank => true do
+      assignable_values_for :genre, default: 'rock', allow_blank: true do
         ['pop', 'rock', 'electronic']
       end
     end
 
 The `:allow_blank` option can be a symbol, in which case a method of that name will be called on the record.
 
-The `:allow_blank` option can also be a lambda, in which case the lambda will be called in the context of the record.
+The `:allow_blank` option can also be a proc, in which case the proc will be called in the context of the record.
 
 
 ### Values are only validated when they change
@@ -141,7 +141,7 @@ Values are only validated when they change. This is useful when the list of assi
 
 If a value has been saved before, it will remain valid, even if it is no longer assignable:
 
-    Song.update_all(:year => 1985) # update all records with a value that is no longer valid
+    Song.update_all(year: 1985) # update all records with a value that is no longer valid
     song = Song.last
     song.year # => 1985
     song.valid?  # => true
@@ -175,15 +175,15 @@ You can restrict `belongs_to` associations in the same manner as scalar attribut
       belongs_to :artist
 
       assignable_values_for :artist do
-        Artist.where(:signed => true)
+        Artist.where(signed: true)
       end
 
     end
 
 Listing and validating als works the same:
 
-    chicane = Artist.create!(:name => 'Chicane', :signed => true)
-    lt2 = Artist.create!(:name => 'LT2', :signed => false)
+    chicane = Artist.create!(name: 'Chicane', signed: true)
+    lt2 = Artist.create!(name: 'LT2', signed: false)
 
     song = Song.new
 
@@ -225,10 +225,10 @@ Obtaining assignable values from another source
 
 The list of assignable values can be provided by any object that is accessible from your model. This is useful for authorization scenarios like [Consul](https://github.com/makandra/consul) or [CanCan](https://github.com/ryanb/cancan), where permissions are defined in a single class.
 
-You can define the source of assignable values by setting the `:through` option to a lambda:
+You can define the source of assignable values by setting the `:through` option to a proc:
 
     class Story < ActiveRecord::Base
-      assignable_values_for :state, :through => lambda { Power.current }
+      assignable_values_for :state, through: proc { Power.current }
     end
 
 `Power.current` must now respond to a method `assignable_story_states` or `assignable_story_states(story)` which returns an `Enumerable` of state strings:
@@ -251,7 +251,7 @@ You can define the source of assignable values by setting the `:through` option 
 
 Listing and validating works the same with delegation:
 
-    story = Story.new(:state => 'accepted')
+    story = Story.new(state: 'accepted')
 
     Power.current = Power.new(:guest)
     story.assignable_states # => ['draft', 'pending']
@@ -263,17 +263,17 @@ Listing and validating works the same with delegation:
 
 Note that delegated validation is skipped when the delegate is `nil`. This way your model remains usable when there is no authorization context, like in batch processes or the console:
 
-    story = Story.new(:state => 'foo')
+    story = Story.new(state: 'foo')
     Power.current = nil
     story.valid? # => true
 
 Think of this as enabling an optional authorization layer on top of your model validations, which can be switched on or off depending on the current context.
 
-Instead of a lambda you can also use the `:through` option to name an instance method:
+Instead of a proc you can also use the `:through` option to name an instance method:
 
     class Story < ActiveRecord::Base
       attr_accessor :power
-      assignable_values_for :state, :through => :power
+      assignable_values_for :state, through: :power
     end
 
 
@@ -303,7 +303,7 @@ You can now delegate validation of assignable values to the current power by say
 This is a shortcut for saying:
 
      class Story < ActiveRecord::Base
-       assignable_values_for :state, :through => lambda { Power.current }
+       assignable_values_for :state, through: proc { Power.current }
      end
 
 Head over to the [Consul README](https://github.com/makandra/consul) for details.
