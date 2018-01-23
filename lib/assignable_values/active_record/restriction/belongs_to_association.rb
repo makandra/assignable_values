@@ -27,11 +27,15 @@ module AssignableValues
         end
 
         def has_previously_saved_value?(record)
-          !record.new_record? && record.respond_to?(association_id_was_method)
+          if record.respond_to?(:attribute_in_database)
+            !record.new_record? # Rails >= 5.1
+          else
+            !record.new_record? && record.respond_to?(association_id_was_method) # Rails <= 5.0
+          end
         end
 
         def previously_saved_value(record)
-          if old_id = record.send(association_id_was_method).presence
+          if old_id = association_id_was(record)
             if old_id == association_id(record)
               current_value(record) # no need to query the database if nothing changed
             else
@@ -45,6 +49,14 @@ module AssignableValues
         end
 
         private
+
+        def association_id_was(record)
+          if record.respond_to?(:attribute_in_database)
+            record.attribute_in_database(:"#{association_id_method}").presence # Rails >= 5.1
+          else
+            record.send(association_id_was_method).presence # Rails <= 5.0
+          end
+        end
 
         def association_id_was_method
           :"#{association_id_method}_was"

@@ -4,6 +4,7 @@ rvm:
   - 1.8.7
   - 2.1.8
   - 2.3.1
+  - 2.4.2
 
 gemfile:
   - gemfiles/Gemfile.2.3
@@ -18,10 +19,16 @@ matrix:
       rvm: 2.1.8
     - gemfile: gemfiles/Gemfile.2.3
       rvm: 2.3.1
+    - gemfile: gemfiles/Gemfile.2.3
+      rvm: 2.4.2
     - gemfile: gemfiles/Gemfile.3.2
       rvm: 2.3.1
+    - gemfile: gemfiles/Gemfile.3.2
+      rvm: 2.4.2
     - gemfile: gemfiles/Gemfile.4.2
       rvm: 1.8.7
+    - gemfile: gemfiles/Gemfile.4.2
+      rvm: 2.4.2
     - gemfile: gemfiles/Gemfile.5.0
       rvm: 2.1.8
     - gemfile: gemfiles/Gemfile.5.0
