@@ -177,7 +177,7 @@ module AssignableValues
             define_method validate_method do
               restriction.validate_record(self)
             end
-            validate validate_method
+            validate validate_method.to_sym
           end
         end
 
