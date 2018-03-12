@@ -262,6 +262,27 @@ describe AssignableValues::ActiveRecord do
         record.should be_valid
       end
 
+      it 'should not request the list of assignable values during validation if the association has not changed' do
+        allowed_association = Artist.create!
+        klass = Song.disposable_copy
+        record = klass.create!(:artist => allowed_association)
+
+        request_count = 0
+
+        klass.class_eval do
+          assignable_values_for :artist do
+            request_count += 1
+            [allowed_association]
+          end
+        end
+
+        record.reload
+        request_count.should == 0
+        record.year = 1975 # change any other attribute to make the record dirty
+        record.valid?
+        request_count.should == 0
+      end
+
       it 'should allow nil for an association if the record was saved before with a nil association' do
         allowed_association = Artist.create!
         klass = Song.disposable_copy
@@ -370,6 +391,32 @@ describe AssignableValues::ActiveRecord do
           end
         end
         klass.new.assignable_years.should == [1977, 1980, 1983]
+      end
+
+      it 'should not request the list of assignable values during validation if the association has not changed' do
+        allowed_association = Artist.create!
+        klass = Song.disposable_copy
+        request_count = 0
+
+        delegate = Class.new do
+          define_method :assignable_song_artists do
+            request_count += 1
+            [allowed_association]
+          end
+        end.new
+
+        record = klass.create!(:artist => allowed_association)
+
+        klass.class_eval do
+          assignable_values_for :artist, through: lambda { delegate }
+        end
+
+        request_count.should == 0
+
+        record.reload
+        record.year = 1975 # change any other attribute to make the record dirty
+        record.valid?
+        request_count.should == 0
       end
 
       context 'when the delegation method returns nil' do
