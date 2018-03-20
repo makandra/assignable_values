@@ -408,7 +408,7 @@ describe AssignableValues::ActiveRecord do
         record = klass.create!(:artist => allowed_association)
 
         klass.class_eval do
-          assignable_values_for :artist, through: lambda { delegate }
+          assignable_values_for :artist, :through => lambda { delegate }
         end
 
         request_count.should == 0
