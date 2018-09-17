@@ -1,4 +1,7 @@
-Gemika::Database.new.rewrite_schema! do
+database = Gemika::Database.new
+database.connect
+
+database.rewrite_schema! do
 
   create_table :artists
 
