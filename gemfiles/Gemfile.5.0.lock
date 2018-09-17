@@ -1,7 +1,7 @@
 PATH
   remote: ..
   specs:
-    assignable_values (0.13.2)
+    assignable_values (0.14.0)
       activerecord (>= 2.3)
 
 GEM
@@ -64,4 +64,4 @@ DEPENDENCIES
   rspec_candy
 
 BUNDLED WITH
-   1.16.1
+   1.16.4
