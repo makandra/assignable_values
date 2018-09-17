@@ -4,12 +4,16 @@ class Artist < ActiveRecord::Base
 
 end
 
-
 class Song < ActiveRecord::Base
 
   belongs_to :artist
 
-  attr_accessor :sub_genre
+  attr_accessor :sub_genre, :sub_genres
+
+  if ActiveRecord::VERSION::MAJOR < 4 || !Song.new(:genres => ['test']).genres.is_a?(Array)
+    # Rails 4 or not postgres
+    serialize :genres
+  end
 
 end
 

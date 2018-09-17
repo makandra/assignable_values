@@ -39,6 +39,50 @@ describe AssignableValues::ActiveRecord do
 
     end
 
+    context 'when validating virtual attributes with multiple: true' do
+
+      context 'with allow_blank: false' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+            assignable_values_for :sub_genres,:multiple => true do
+              %w[pop rock]
+            end
+          end
+        end
+
+        it 'should validate that the attribute is a subset' do
+          @klass.new(:sub_genres => ['pop']).should be_valid
+          @klass.new(:sub_genres => ['pop', 'rock']).should be_valid
+          @klass.new(:sub_genres => ['pop', 'disallowed value']).should_not be_valid
+        end
+
+        it 'should not allow nil or [] for allow_blank: false' do
+          @klass.new(:sub_genres => nil).should_not be_valid
+          @klass.new(:sub_genres => []).should_not be_valid
+        end
+
+      end
+
+      context 'with allow_blank: true' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+            assignable_values_for :sub_genres, :multiple => true, :allow_blank => true do
+              %w[pop rock]
+            end
+          end
+        end
+
+        it 'should allow nil or [] for allow_blank: false' do
+          @klass.new(:sub_genres => nil).should be_valid
+          @klass.new(:sub_genres => []).should be_valid
+        end
+
+      end
+
+    end
+
     context 'when validating scalar attributes' do
 
       context 'without options' do
@@ -189,6 +233,76 @@ describe AssignableValues::ActiveRecord do
           errors = record.errors[:genre]
           error = errors.is_a?(Array) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
           error.should == 'should be something different'
+        end
+
+      end
+
+    end
+
+    context 'when validating scalar attributes with multiple: true' do
+
+      context 'without options' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+            assignable_values_for :genres, :multiple => true do
+              %w[pop rock]
+            end
+          end
+        end
+
+        it 'should validate that the attribute is allowed' do
+          @klass.new(:genres => ['pop']).should be_valid
+          @klass.new(:genres => ['pop', 'rock']).should be_valid
+          @klass.new(:genres => ['pop', 'invalid value']).should_not be_valid
+        end
+
+        it 'should not allow a scalar attribute' do
+          @klass.new(:genres => 'pop').should_not be_valid
+        end
+
+        it 'should not allow nil or [] for the attribute value' do
+          @klass.new(:genres => nil).should_not be_valid
+          @klass.new(:genres => []).should_not be_valid
+        end
+
+        it 'should allow a subset of previously saved values even if that value is no longer allowed' do
+          record = @klass.create!(:genres => ['pop'])
+          record.genres = ['pretend', 'previously', 'valid', 'value']
+          if ActiveRecord::VERSION::MAJOR < 3
+            record.save(false)
+          else
+            record.save(:validate => false) # update without validations for the sake of this test
+          end
+          record.reload.should be_valid
+          record.genres = ['valid', 'previously', 'pop']
+          record.should be_valid
+        end
+
+        it 'should allow a previously saved, blank value even if that value is no longer allowed' do
+          record = @klass.create!(:genres => ['pop'])
+          @klass.update_all(:genres => []) # update without validations for the sake of this test
+          record.reload.should be_valid
+        end
+
+      end
+
+      context 'if the :allow_blank option is set to true' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+            assignable_values_for :genres, :multiple => true, :allow_blank => true do
+              %w[pop rock]
+            end
+          end
+        end
+
+        it 'should allow nil for the attribute value' do
+          @klass.new(:genres => nil).should be_valid
+        end
+
+        it 'should allow an empty array as value' do
+          @klass.new(:genres => []).should be_valid
         end
 
       end

@@ -3,6 +3,13 @@ module AssignableValues
     module Restriction
       class BelongsToAssociation < Base
 
+        def initialize(*)
+          super
+          if @options[:multiple]
+            raise "Option :multiple is not allowed for restricting belongs_to associations."
+          end
+        end
+
         private
 
         def association_class
@@ -47,8 +54,6 @@ module AssignableValues
         def current_value(record)
           record.send(property)
         end
-
-        private
 
         def association_id_was(record)
           if record.respond_to?(:attribute_in_database)

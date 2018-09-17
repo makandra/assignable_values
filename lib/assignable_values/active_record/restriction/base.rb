@@ -29,42 +29,6 @@ module AssignableValues
           end
         end
 
-        def error_property
-          property
-        end
-
-        def not_included_error_message
-          if @options[:message]
-            @options[:message]
-          else
-            I18n.t('errors.messages.inclusion', :default => 'is not included in the list')
-          end
-        end
-
-        def assignable_value?(record, value)
-          (has_previously_saved_value?(record) && value == previously_saved_value(record))  ||
-            (value.blank? && allow_blank?(record)) ||
-            assignable_values(record).include?(value)
-        end
-
-        def assignable_values(record, options = {})
-          assignable_values = []
-          current_values = assignable_values_from_record_or_delegate(record)
-
-          if options.fetch(:include_old_value, true) && has_previously_saved_value?(record)
-            old_value = previously_saved_value(record)
-            unless old_value.blank? || current_values.include?(old_value)
-              assignable_values << old_value
-            end
-          end
-
-          assignable_values += current_values
-          if options[:decorate]
-            assignable_values = decorate_values(assignable_values)
-          end
-          assignable_values
-        end
-
         def set_default(record)
           if record.new_record? && record.send(property).nil?
             default_value = evaluate_default(record, default)
@@ -83,7 +47,64 @@ module AssignableValues
           true
         end
 
+        def assignable_values(record, options = {})
+          assignable_values = []
+          current_values = assignable_values_from_record_or_delegate(record)
+
+          if options.fetch(:include_old_value, true) && has_previously_saved_value?(record)
+            old_value = previously_saved_value(record)
+            if @options[:multiple]
+              if old_value.is_a?(Array)
+                assignable_values |= old_value
+              end
+            elsif !old_value.blank? && !current_values.include?(old_value)
+              assignable_values << old_value
+            end
+          end
+
+          assignable_values += current_values
+          if options[:decorate]
+            assignable_values = decorate_values(assignable_values)
+          end
+          assignable_values
+        end
+
         private
+
+        def error_property
+          property
+        end
+
+        def not_included_error_message
+          if @options[:message]
+            @options[:message]
+          else
+            I18n.t('errors.messages.inclusion', :default => 'is not included in the list')
+          end
+        end
+
+        def assignable_value?(record, value)
+          if @options[:multiple]
+            assignable_multi_value?(record, value)
+          else
+            assignable_single_value?(record, value)
+          end
+        end
+
+        def assignable_single_value?(record, value)
+          (has_previously_saved_value?(record) && value == previously_saved_value(record)) ||
+            (value.blank? && allow_blank?(record)) ||
+            assignable_values(record, :include_old_value => false).include?(value)
+        end
+
+        def assignable_multi_value?(record, value)
+          (has_previously_saved_value?(record) && value == previously_saved_value(record)) ||
+            (value.blank? ? allow_blank?(record) : subset?(value, assignable_values(record)))
+        end
+
+        def subset?(array1, array2)
+          array1.is_a?(Array) && array2.is_a?(Array) && (array1 - array2).empty?
+        end
 
         def evaluate_default(record, value_or_proc)
           if value_or_proc.is_a?(Proc)
