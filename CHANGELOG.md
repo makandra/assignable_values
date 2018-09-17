@@ -11,7 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Compatible changes
 
--
+- Add support for Array columns using `multiple: true`.
 
 
 ## 0.13.2 - 2018-01-23
