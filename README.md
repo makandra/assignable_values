@@ -164,6 +164,24 @@ Once a changed value has been saved, the previous value disappears from the list
 
 This is to prevent records from becoming invalid as the list of assignable values evolves. This also prevents `<select>` menus with blank selections when opening an old record in a web form.
 
+### Array values
+
+Assignable values can also be used for array values. This works when you use Rails 5+ and PostgreSQL with an array column, or with ActiveRecord's `serialize`.
+
+To validate array values, pass `multiple: true`:
+
+```
+class Song < ActiveRecord::Base
+  serialize :genres   # skip this when you use PostgreSQL and an array type column
+
+  assignable_values_for :genres, multiple: true do
+    ['pop', 'rock', 'electronic']
+  end
+end
+```
+
+In this case, every *subset* of the given values is valid, for example `['pop', 'electronic']`.
+
 
 Restricting belongs_to associations
 -----------------------------------
