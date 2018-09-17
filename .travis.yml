@@ -12,6 +12,7 @@ gemfile:
   - gemfiles/Gemfile.4.2
   - gemfiles/Gemfile.5.0
   - gemfiles/Gemfile.5.1
+  - gemfiles/Gemfile.5.1.pg
 
 matrix:
   exclude:
@@ -37,6 +38,10 @@ matrix:
       rvm: 2.1.8
     - gemfile: gemfiles/Gemfile.5.1
       rvm: 1.8.7
+    - gemfile: gemfiles/Gemfile.5.1.pg
+      rvm: 2.1.8
+    - gemfile: gemfiles/Gemfile.5.1.pg
+      rvm: 1.8.7
 
 sudo: false
 
@@ -47,8 +52,8 @@ notifications:
     - fail@makandra.de
 
 before_script:
+  - psql -c 'create database assignable_values_test;' -U postgres
   - mysql -e 'create database IF NOT EXISTS assignable_values_test;'
-  - mysql -e "GRANT ALL PRIVILEGES ON assignable_values_test.* TO 'travis'@'%';"
 
 install:
   # Old Travis CI bundler explodes when lockfile version doesn't match recently bumped version
