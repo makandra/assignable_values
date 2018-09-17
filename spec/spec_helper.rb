@@ -1,7 +1,6 @@
 $: << File.join(File.dirname(__FILE__), "/../../lib" )
 
 require 'i18n'
-require 'mysql2'
 require 'active_record'
 require 'assignable_values'
 require 'rspec_candy/all'
