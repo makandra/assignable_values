@@ -166,7 +166,7 @@ This is to prevent records from becoming invalid as the list of assignable value
 
 ### Array values
 
-Assignable values can also be used for array values. This works when you use Rails 5+ and PostgreSQL with an array column, or with ActiveRecord's `serialize`.
+Assignable values can also be used for array values. This works when you use Rails 5+ and PostgreSQL with an array column, or on older Rails versions and other databases using ActiveRecord's `serialize`.
 
 To validate array values, pass `multiple: true`:
 
