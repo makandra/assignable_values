@@ -65,13 +65,13 @@ Or you can retrieve the humanized version of any given value by passing it as an
 
 You can obtain a list of all assignable values with their humanizations:
 
-    song.humanized_genres.size            # => 3
-    song.humanized_genres.first.value     # => "pop"
-    song.humanized_genres.first.humanized # => "Pop music"
+    song.humanized_assignable_genres.size            # => 3
+    song.humanized_assignable_genres.first.value     # => "pop"
+    song.humanized_assignable_genres.first.humanized # => "Pop music"
 
 A good way to populate a `<select>` tag with pairs of internal values and human labels is to use the `collection_select` helper from Rails:
 
-    form.collection_select :genre, form.object.humanized_genres, :value, :humanized
+    form.collection_select :genre, form.object.humanized_assignable_genres, :value, :humanized
 
 
 ### Defining default values
@@ -181,6 +181,13 @@ end
 ```
 
 In this case, every *subset* of the given values is valid, for example `['pop', 'electronic']`.
+
+For humanization, you can still use
+
+```
+song.humanizable_genre('pop')                       # => "Pop music"
+song.assignable_humanizable_genres.last.humanized   # => "Electronic music"
+```
 
 
 Restricting belongs_to associations

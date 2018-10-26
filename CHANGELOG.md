@@ -5,12 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ## Unreleased
 
 ### Breaking changes
-
--
+- `#humanized_values` is deprecated, in favour of `#humanized_assignablevalues`
 
 ### Compatible changes
-
--
+- `#humanized_value(value)` and `#humanized_assignable_values` now also works for the `multiple: true` case
 
 
 ## 0.14.0 - 2018-09-17
