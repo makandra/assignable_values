@@ -7,7 +7,7 @@ module AssignableValues
           super
           define_humanized_value_instance_method
           define_humanized_value_class_method
-          define_humanized_values_instance_method
+          define_humanized_assignable_values_instance_method
         end
 
         def humanized_value(value)
@@ -17,7 +17,7 @@ module AssignableValues
           end
         end
 
-        def humanized_values(record)
+        def humanized_assignable_values(record)
           values = assignable_values(record)
           values.collect do |value|
             HumanizedValue.new(value, humanized_value(value))
@@ -45,8 +45,12 @@ module AssignableValues
 
         def define_humanized_value_instance_method
           restriction = self
+          multiple = @options[:multiple]
           enhance_model do
-            define_method :"humanized_#{restriction.property}" do |*args|
+            define_method :"humanized_#{restriction.property.to_s.singularize}" do |*args|
+              if args.size > 1 || (multiple && args.size == 0)
+                raise ArgumentError.new("wrong number of arguments (#{args.size} for #{multiple ? '1' : '0..1'})")
+              end
               given_value = args[0]
               value = given_value || send(restriction.property)
               restriction.humanized_value(value)
@@ -54,11 +58,19 @@ module AssignableValues
           end
         end
 
-        def define_humanized_values_instance_method
+        def define_humanized_assignable_values_instance_method
           restriction = self
+          multiple = @options[:multiple]
           enhance_model do
-            define_method :"humanized_#{restriction.property.to_s.pluralize}" do
-              restriction.humanized_values(self)
+            define_method :"humanized_assignable_#{restriction.property.to_s.pluralize}" do
+              restriction.humanized_assignable_values(self)
+            end
+
+            unless multiple
+              define_method :"humanized_#{restriction.property.to_s.pluralize}" do
+                ActiveSupport::Deprecation.warn("humanized_<value>s is deprecated, use humanized_assignable_<value>s instead", caller)
+                restriction.humanized_assignable_values(self)
+              end
             end
           end
         end

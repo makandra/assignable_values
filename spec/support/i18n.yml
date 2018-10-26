@@ -12,6 +12,9 @@ en:
       genre:
         pop: 'Pop music'
         rock: 'Rock music'
+      multi_genres:
+        pop: 'Pop music'
+        rock: 'Rock music'
       sub_genre:
         pop: 'Pop music'
         rock: 'Rock music'

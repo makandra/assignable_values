@@ -8,6 +8,7 @@ class HumanizableString < String
   end
 
   def humanized
+    ActiveSupport::Deprecation.warn("assignable_<value>.humanized is deprecated, use humanized_assignable_<value>s.humanized instead", caller)
     @humanization
   end
 

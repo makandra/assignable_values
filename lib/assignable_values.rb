@@ -1,4 +1,5 @@
 require 'active_record'
+require 'active_support/deprecation'
 require 'assignable_values/errors'
 require 'assignable_values/active_record'
 require 'assignable_values/active_record/restriction/base'

@@ -20,6 +20,10 @@ describe AssignableValues::ActiveRecord do
           assignable_values_for :sub_genre do
             %w[pop rock]
           end
+
+          assignable_values_for :multi_genres, :allow_blank => true do
+            %w[pop rock]
+          end
         end
       end
 
@@ -35,6 +39,8 @@ describe AssignableValues::ActiveRecord do
       it 'should generate a method returning the humanized value' do
         song = @klass.new(:sub_genre => 'pop')
         song.humanized_sub_genre.should == 'Pop music'
+        song.humanized_sub_genre('rock').should == 'Rock music'
+        song.humanized_multi_genre('rock').should == 'Rock music'
       end
 
     end
@@ -45,21 +51,21 @@ describe AssignableValues::ActiveRecord do
 
         before :each do
           @klass = Song.disposable_copy do
-            assignable_values_for :sub_genres,:multiple => true do
+            assignable_values_for :multi_genres, :multiple => true do
               %w[pop rock]
             end
           end
         end
 
         it 'should validate that the attribute is a subset' do
-          @klass.new(:sub_genres => ['pop']).should be_valid
-          @klass.new(:sub_genres => ['pop', 'rock']).should be_valid
-          @klass.new(:sub_genres => ['pop', 'disallowed value']).should_not be_valid
+          @klass.new(:multi_genres => ['pop']).should be_valid
+          @klass.new(:multi_genres => ['pop', 'rock']).should be_valid
+          @klass.new(:multi_genres => ['pop', 'disallowed value']).should_not be_valid
         end
 
         it 'should not allow nil or [] for allow_blank: false' do
-          @klass.new(:sub_genres => nil).should_not be_valid
-          @klass.new(:sub_genres => []).should_not be_valid
+          @klass.new(:multi_genres => nil).should_not be_valid
+          @klass.new(:multi_genres => []).should_not be_valid
         end
 
       end
@@ -68,15 +74,15 @@ describe AssignableValues::ActiveRecord do
 
         before :each do
           @klass = Song.disposable_copy do
-            assignable_values_for :sub_genres, :multiple => true, :allow_blank => true do
+            assignable_values_for :multi_genres, :multiple => true, :allow_blank => true do
               %w[pop rock]
             end
           end
         end
 
         it 'should allow nil or [] for allow_blank: false' do
-          @klass.new(:sub_genres => nil).should be_valid
-          @klass.new(:sub_genres => []).should be_valid
+          @klass.new(:multi_genres => nil).should be_valid
+          @klass.new(:multi_genres => []).should be_valid
         end
 
       end
@@ -791,11 +797,18 @@ describe AssignableValues::ActiveRecord do
             assignable_values_for :genre do
               %w[pop rock]
             end
+
+            assignable_values_for :multi_genres, :multiple => true do
+              %w[pop rock]
+            end
           end
-          genres = klass.new.humanized_genres
+          genres = klass.new.humanized_assignable_genres
           genres.collect(&:value).should == ['pop', 'rock']
           genres.collect(&:humanized).should == ['Pop music', 'Rock music']
           genres.collect(&:to_s).should == ['Pop music', 'Rock music']
+
+          multi_genres = klass.new.humanized_assignable_multi_genres
+          multi_genres.collect(&:humanized).should == ['Pop music', 'Rock music']
         end
 
         it 'should use String#humanize as a default translation' do
@@ -804,7 +817,7 @@ describe AssignableValues::ActiveRecord do
               %w[electronic]
             end
           end
-          klass.new.humanized_genres.collect(&:humanized).should == ['Electronic']
+          klass.new.humanized_assignable_genres.collect(&:humanized).should == ['Electronic']
         end
 
         it 'should allow to define humanizations for values that are not strings' do
@@ -813,7 +826,7 @@ describe AssignableValues::ActiveRecord do
               [1977, 1980, 1983]
             end
           end
-          years = klass.new.humanized_years
+          years = klass.new.humanized_assignable_years
           years.collect(&:value).should == [1977, 1980, 1983]
           years.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire stroke back', 'The year the Jedi returned']
         end
@@ -824,11 +837,22 @@ describe AssignableValues::ActiveRecord do
               [1977, 1980, 1983]
             end
           end
-          years = klass.new.humanized_years
+          years = klass.new.humanized_assignable_years
           years.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire stroke back', 'The year the Jedi returned']
         end
 
         context 'legacy methods for API compatibility' do
+
+          it 'should define a method that return pairs of values and their humanization' do
+            klass = Song.disposable_copy do
+              assignable_values_for :genre do
+                %w[pop rock]
+              end
+            end
+            ActiveSupport::Deprecation.should_receive(:warn)
+            genres = klass.new.humanized_genres
+            genres.collect(&:humanized).should == ['Pop music', 'Rock music']
+          end
 
           it "should define a method #humanized on assignable string values, which return up the value's' translation" do
             klass = Song.disposable_copy do
@@ -836,6 +860,7 @@ describe AssignableValues::ActiveRecord do
                 %w[pop rock]
               end
             end
+            ActiveSupport::Deprecation.should_receive(:warn).at_least(:once)
             klass.new.assignable_genres.collect(&:humanized).should == ['Pop music', 'Rock music']
           end
 
