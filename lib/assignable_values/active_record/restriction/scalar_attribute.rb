@@ -37,7 +37,7 @@ module AssignableValues
         def define_humanized_value_class_method
           restriction = self
           enhance_model_singleton do
-            define_method :"humanized_#{restriction.property}" do |given_value|
+            define_method :"humanized_#{restriction.property.to_s.singularize}" do |given_value|
               restriction.humanized_value(given_value)
             end
           end
@@ -54,6 +54,19 @@ module AssignableValues
               given_value = args[0]
               value = given_value || send(restriction.property)
               restriction.humanized_value(value)
+            end
+
+            if multiple
+              define_method :"humanized_#{restriction.property}" do
+                values = send(restriction.property)
+                if values.respond_to?(:map)
+                  values.map do |value|
+                    restriction.humanized_value(value)
+                  end
+                else
+                  values
+                end
+              end
             end
           end
         end

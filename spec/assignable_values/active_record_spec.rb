@@ -21,7 +21,7 @@ describe AssignableValues::ActiveRecord do
             %w[pop rock]
           end
 
-          assignable_values_for :multi_genres, :allow_blank => true do
+          assignable_values_for :multi_genres, :multiple => true, :allow_blank => true do
             %w[pop rock]
           end
         end
@@ -98,6 +98,10 @@ describe AssignableValues::ActiveRecord do
             assignable_values_for :genre do
               %w[pop rock]
             end
+
+            assignable_values_for :multi_genres, multiple: true, :allow_blank => true do
+              %w[pop rock]
+            end
           end
         end
 
@@ -159,6 +163,31 @@ describe AssignableValues::ActiveRecord do
           @klass.humanized_genre('rock').should == 'Rock music'
         end
 
+        context 'for multiple: true' do
+          it 'should raise when trying to humanize a value without an argument' do
+            song = @klass.new
+            proc { song.humanized_multi_genre }.should raise_error(ArgumentError)
+          end
+
+          it 'should generate an instance method to retrieve the humanization of any given value' do
+            song = @klass.new(:genre => 'pop')
+            song.humanized_multi_genre('rock').should == 'Rock music'
+          end
+
+          it 'should generate a class method to retrieve the humanization of any given value' do
+            @klass.humanized_multi_genre('rock').should == 'Rock music'
+          end
+
+          it 'should generate an instance method to retrieve the humanizations of all current values' do
+            song = @klass.new
+            song.multi_genres = nil
+            song.humanized_multi_genres.should == nil
+            song.multi_genres = []
+            song.humanized_multi_genres.should == []
+            song.multi_genres = ['pop', 'rock']
+            song.humanized_multi_genres.should == ['Pop music', 'Rock music']
+          end
+        end
       end
 
       context 'if the :allow_blank option is set to true' do
