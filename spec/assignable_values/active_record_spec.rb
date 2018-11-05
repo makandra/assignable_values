@@ -99,7 +99,7 @@ describe AssignableValues::ActiveRecord do
               %w[pop rock]
             end
 
-            assignable_values_for :multi_genres, multiple: true, :allow_blank => true do
+            assignable_values_for :multi_genres, :multiple => true, :allow_blank => true do
               %w[pop rock]
             end
           end
