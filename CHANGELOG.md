@@ -8,7 +8,13 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Compatible changes
 
+
+## 0.15.1 - 2018-11-05
+
+### Compatible changes
+
 - Add `#humanized_values` for the `mutliple: true` case.
+
 
 ## 0.15.0 - 2018-10-26
 
