@@ -185,8 +185,8 @@ In this case, every *subset* of the given values is valid, for example `['pop', 
 For humanization, you can still use
 
 ```
-song.humanizable_genre('pop')                       # => "Pop music"
-song.assignable_humanizable_genres.last.humanized   # => "Electronic music"
+song.humanized_genre('pop')                       # => "Pop music"
+song.humanized_assignable_genres.last.humanized   # => "Electronic music"
 ```
 
 
