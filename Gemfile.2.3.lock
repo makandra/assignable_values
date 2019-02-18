@@ -1,5 +1,5 @@
 PATH
-  remote: ..
+  remote: .
   specs:
     assignable_values (0.15.1)
       activerecord (>= 2.3)

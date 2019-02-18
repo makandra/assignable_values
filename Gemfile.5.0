@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
 
 # Runtime dependencies
-gem 'activerecord', '~>5.1.0'
+gem 'activerecord', '~>5.0.0'
 gem 'i18n'
-gem 'pg', '<1'
+gem 'mysql2'
 
 # Development dependencies
 gem 'rake'
@@ -13,4 +13,4 @@ gem 'rspec_candy'
 gem 'gemika'
 
 # Gem under test
-gem 'assignable_values', :path => '..'
+gem 'assignable_values', :path => '.'

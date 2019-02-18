@@ -1,5 +1,5 @@
 PATH
-  remote: ..
+  remote: .
   specs:
     assignable_values (0.15.1)
       activerecord (>= 2.3)
@@ -7,26 +7,26 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activemodel (5.0.0.1)
-      activesupport (= 5.0.0.1)
-    activerecord (5.0.0.1)
-      activemodel (= 5.0.0.1)
-      activesupport (= 5.0.0.1)
-      arel (~> 7.0)
-    activesupport (5.0.0.1)
-      concurrent-ruby (~> 1.0, >= 1.0.2)
-      i18n (~> 0.7)
-      minitest (~> 5.1)
-      tzinfo (~> 1.1)
-    arel (7.1.4)
-    concurrent-ruby (1.0.2)
-    database_cleaner (1.5.3)
+    activemodel (3.2.22.5)
+      activesupport (= 3.2.22.5)
+      builder (~> 3.0.0)
+    activerecord (3.2.22.5)
+      activemodel (= 3.2.22.5)
+      activesupport (= 3.2.22.5)
+      arel (~> 3.0.2)
+      tzinfo (~> 0.3.29)
+    activesupport (3.2.22.5)
+      i18n (~> 0.6, >= 0.6.4)
+      multi_json (~> 1.0)
+    arel (3.0.3)
+    builder (3.0.4)
+    database_cleaner (1.0.1)
     diff-lcs (1.2.5)
     gemika (0.3.2)
-    i18n (0.7.0)
-    minitest (5.9.1)
-    mysql2 (0.4.5)
-    rake (11.3.0)
+    i18n (0.6.11)
+    multi_json (1.12.1)
+    mysql2 (0.3.17)
+    rake (10.0.3)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
@@ -40,28 +40,26 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
     rspec-support (3.5.0)
-    rspec_candy (0.4.1)
+    rspec_candy (0.2.8)
       rspec
       sneaky-save
-    sneaky-save (0.1.2)
+    sneaky-save (0.0.4)
       activerecord (>= 3.2.0)
-    thread_safe (0.3.5)
-    tzinfo (1.2.2)
-      thread_safe (~> 0.1)
+    tzinfo (0.3.52)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  activerecord (~> 5.0.0)
+  activerecord (~> 3.2.0)
   assignable_values!
-  database_cleaner
+  database_cleaner (~> 1.0.0)
   gemika
-  i18n
-  mysql2
+  i18n (< 0.7)
+  mysql2 (= 0.3.17)
   rake
-  rspec
+  rspec (~> 3.4)
   rspec_candy
 
 BUNDLED WITH
-   1.16.4
+   1.16.1

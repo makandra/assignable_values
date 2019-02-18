@@ -1,5 +1,5 @@
 PATH
-  remote: ..
+  remote: .
   specs:
     assignable_values (0.15.1)
       activerecord (>= 2.3)
@@ -26,7 +26,7 @@ GEM
     i18n (0.9.0)
       concurrent-ruby (~> 1.0)
     minitest (5.10.3)
-    pg (0.21.0)
+    mysql2 (0.4.9)
     rake (12.1.0)
     rspec (3.7.0)
       rspec-core (~> 3.7.0)
@@ -59,7 +59,7 @@ DEPENDENCIES
   database_cleaner
   gemika
   i18n
-  pg (< 1)
+  mysql2
   rake
   rspec
   rspec_candy

@@ -7,40 +7,40 @@ rvm:
   - 2.4.2
 
 gemfile:
-  - gemfiles/Gemfile.2.3
-  - gemfiles/Gemfile.3.2
-  - gemfiles/Gemfile.4.2
-  - gemfiles/Gemfile.5.0
-  - gemfiles/Gemfile.5.1
-  - gemfiles/Gemfile.5.1.pg
+  - Gemfile.2.3
+  - Gemfile.3.2
+  - Gemfile.4.2
+  - Gemfile.5.0
+  - Gemfile.5.1
+  - Gemfile.5.1.pg
 
 matrix:
   exclude:
-    - gemfile: gemfiles/Gemfile.2.3
+    - gemfile: Gemfile.2.3
       rvm: 2.1.8
-    - gemfile: gemfiles/Gemfile.2.3
+    - gemfile: Gemfile.2.3
       rvm: 2.3.1
-    - gemfile: gemfiles/Gemfile.2.3
+    - gemfile: Gemfile.2.3
       rvm: 2.4.2
-    - gemfile: gemfiles/Gemfile.3.2
+    - gemfile: Gemfile.3.2
       rvm: 2.3.1
-    - gemfile: gemfiles/Gemfile.3.2
+    - gemfile: Gemfile.3.2
       rvm: 2.4.2
-    - gemfile: gemfiles/Gemfile.4.2
+    - gemfile: Gemfile.4.2
       rvm: 1.8.7
-    - gemfile: gemfiles/Gemfile.4.2
+    - gemfile: Gemfile.4.2
       rvm: 2.4.2
-    - gemfile: gemfiles/Gemfile.5.0
+    - gemfile: Gemfile.5.0
       rvm: 2.1.8
-    - gemfile: gemfiles/Gemfile.5.0
+    - gemfile: Gemfile.5.0
       rvm: 1.8.7
-    - gemfile: gemfiles/Gemfile.5.1
+    - gemfile: Gemfile.5.1
       rvm: 2.1.8
-    - gemfile: gemfiles/Gemfile.5.1
+    - gemfile: Gemfile.5.1
       rvm: 1.8.7
-    - gemfile: gemfiles/Gemfile.5.1.pg
+    - gemfile: Gemfile.5.1.pg
       rvm: 2.1.8
-    - gemfile: gemfiles/Gemfile.5.1.pg
+    - gemfile: Gemfile.5.1.pg
       rvm: 1.8.7
 
 sudo: false
