@@ -255,11 +255,11 @@ describe AssignableValues::ActiveRecord do
       context 'if the :message option is set to a string' do
 
         before :each do
-           @klass = Song.disposable_copy do
-             assignable_values_for :genre, :message => 'should be something different' do
-               %w[pop rock]
-             end
-           end
+          @klass = Song.disposable_copy do
+            assignable_values_for :genre, :message => 'should be something different' do
+              %w[pop rock]
+            end
+          end
         end
 
         it 'should use this string as a custom error message' do
@@ -514,7 +514,11 @@ describe AssignableValues::ActiveRecord do
         klass = Song.disposable_copy do
           assignable_values_for :genre, :through => :delegate
           def delegate
-            OpenStruct.new(:assignable_song_genres => %w[pop rock])
+            Class.new do
+              def assignable_song_genres
+                %w[pop rock]
+              end
+            end.new
           end
         end
         klass.new(:genre => 'pop').should be_valid
@@ -525,9 +529,14 @@ describe AssignableValues::ActiveRecord do
         klass = Song.disposable_copy do
           assignable_values_for :genre, :through => lambda { delegate }
           def delegate
-            OpenStruct.new(:assignable_song_genres => %w[pop rock])
+            Class.new do
+              def assignable_song_genres
+                %w[pop rock]
+              end
+            end.new
           end
         end
+
         klass.new(:genre => 'pop').should be_valid
         klass.new(:genre => 'disallowed value').should_not be_valid
       end
@@ -536,7 +545,11 @@ describe AssignableValues::ActiveRecord do
         klass = Recording::Vinyl.disposable_copy do
           assignable_values_for :year, :through => :delegate
           def delegate
-            OpenStruct.new(:assignable_recording_vinyl_years => [1977, 1980, 1983])
+            Class.new do
+              def assignable_recording_vinyl_years
+                [1977, 1980, 1983]
+              end
+            end.new
           end
         end
         klass.new.assignable_years.should == [1977, 1980, 1983]
@@ -926,7 +939,7 @@ describe AssignableValues::ActiveRecord do
           delegate = Object.new
           def delegate.assignable_song_genres(record)
             record_received(record)
-             %w[pop rock]
+            %w[pop rock]
           end
           klass = Song.disposable_copy do
             assignable_values_for :genre, :through => :delegate
@@ -939,6 +952,55 @@ describe AssignableValues::ActiveRecord do
           record.assignable_genres.should ==  %w[pop rock]
         end
 
+        it "should call the given method on the delegate if the delegate's query method takes no arguments" do
+          delegate = Object.new
+          def delegate.assignable_song_genres
+            no_record_received
+            %w[pop rock]
+          end
+          klass = Song.disposable_copy do
+            assignable_values_for :genre, :through => :delegate
+            define_method :delegate do
+              delegate
+            end
+          end
+          record = klass.new
+          delegate.should_receive(:no_record_received)
+          record.assignable_genres.should ==  %w[pop rock]
+        end
+
+        it "should pass the record to the given method if the delegate's query method takes variable arguments" do
+          delegate = Object.new
+          def delegate.assignable_song_genres(*records)
+            record_received(*records)
+            %w[pop rock]
+          end
+          klass = Song.disposable_copy do
+            assignable_values_for :genre, :through => :delegate
+            define_method :delegate do
+              delegate
+            end
+          end
+          record = klass.new
+          delegate.should_receive(:record_received).with(record)
+          record.assignable_genres.should ==  %w[pop rock]
+        end
+
+        it "should raise an error if the delegate's query method takes more than one argument" do
+          delegate = Object.new
+          def delegate.assignable_song_genres(record, other_arg)
+            %w[pop rock]
+          end
+          klass = Song.disposable_copy do
+            assignable_values_for :genre, :through => :delegate
+            define_method :delegate do
+              delegate
+            end
+          end
+          record = klass.new
+          expect{record.assignable_genres}.to raise_error(ArgumentError)
+        end
+
         it 'should raise an error if the given method returns nil' do
           klass = Song.disposable_copy do
             assignable_values_for :genre, :through => :delegate
@@ -948,11 +1010,7 @@ describe AssignableValues::ActiveRecord do
           end
           expect { klass.new.assignable_genres }.to raise_error(AssignableValues::DelegateUnavailable)
         end
-
       end
-
     end
-
   end
-
 end
