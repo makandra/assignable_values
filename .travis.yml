@@ -5,6 +5,7 @@ rvm:
   - 2.1.8
   - 2.3.1
   - 2.4.2
+  - 2.5.3
 
 gemfile:
   - Gemfile.2.3
@@ -13,6 +14,7 @@ gemfile:
   - Gemfile.5.0
   - Gemfile.5.1
   - Gemfile.5.1.pg
+  - Gemfile.6.0.pg
 
 matrix:
   exclude:
@@ -22,26 +24,43 @@ matrix:
       rvm: 2.3.1
     - gemfile: Gemfile.2.3
       rvm: 2.4.2
+    - gemfile: Gemfile.2.3
+      rvm: 2.5.3
     - gemfile: Gemfile.3.2
       rvm: 2.3.1
     - gemfile: Gemfile.3.2
       rvm: 2.4.2
+    - gemfile: Gemfile.3.2
+      rvm: 2.5.3
     - gemfile: Gemfile.4.2
       rvm: 1.8.7
     - gemfile: Gemfile.4.2
       rvm: 2.4.2
+    - gemfile: Gemfile.4.2
+      rvm: 2.5.3
+    - gemfile: Gemfile.5.0
+      rvm: 1.8.7
     - gemfile: Gemfile.5.0
       rvm: 2.1.8
-    - gemfile: Gemfile.5.0
+    - gemfile: Gemfile.5.1
       rvm: 1.8.7
     - gemfile: Gemfile.5.1
       rvm: 2.1.8
-    - gemfile: Gemfile.5.1
+    - gemfile: Gemfile.5.1.pg
       rvm: 1.8.7
     - gemfile: Gemfile.5.1.pg
       rvm: 2.1.8
-    - gemfile: Gemfile.5.1.pg
+    - gemfile: Gemfile.6.0.pg
       rvm: 1.8.7
+    - gemfile: Gemfile.6.0.pg
+      rvm: 2.1.8
+    - gemfile: Gemfile.6.0.pg
+      rvm: 2.3.1
+    - gemfile: Gemfile.6.0.pg
+      rvm: 2.4.2
+
+addons:
+    postgresql: "9.4"
 
 sudo: false
 
