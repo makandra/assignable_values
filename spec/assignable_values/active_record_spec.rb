@@ -756,6 +756,11 @@ describe AssignableValues::ActiveRecord do
         record = klass.create!(:genre => 'pop')
         klass.update_all(:genre => 'ballad') # update without validation for the sake of this test
         record.reload.assignable_genres.should == %w[ballad pop rock]
+
+        humanized_genres = record.humanized_assignable_genres
+        humanized_genres.collect(&:value).should == %w[ballad pop rock]
+        humanized_genres.collect(&:humanized).should == ['Ballad', 'Pop music', 'Rock music']
+        humanized_genres.collect(&:to_s).should == ['Ballad', 'Pop music', 'Rock music']
       end
 
       it 'should not prepend a previously saved value to the top of the list if it is still allowed (bugfix)' do
@@ -799,6 +804,11 @@ describe AssignableValues::ActiveRecord do
         record = klass.create!(:genre => 'pop')
         klass.update_all(:genre => 'ballad') # update without validation for the sake of this test
         record.reload.assignable_genres(:include_old_value => false).should == %w[pop rock]
+
+        humanized_genres = record.humanized_assignable_genres(:include_old_value => false)
+        humanized_genres.collect(&:value).should == %w[pop rock]
+        humanized_genres.collect(&:humanized).should == ['Pop music', 'Rock music']
+        humanized_genres.collect(&:to_s).should == ['Pop music', 'Rock music']
       end
 
       it 'should allow omitting a previously saved association' do

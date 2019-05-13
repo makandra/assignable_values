@@ -17,8 +17,8 @@ module AssignableValues
           end
         end
 
-        def humanized_assignable_values(record)
-          values = assignable_values(record)
+        def humanized_assignable_values(record, options = {})
+          values = assignable_values(record, options)
           values.collect do |value|
             HumanizedValue.new(value, humanized_value(value))
           end
@@ -75,8 +75,8 @@ module AssignableValues
           restriction = self
           multiple = @options[:multiple]
           enhance_model do
-            define_method :"humanized_assignable_#{restriction.property.to_s.pluralize}" do
-              restriction.humanized_assignable_values(self)
+            define_method :"humanized_assignable_#{restriction.property.to_s.pluralize}" do |*args|
+              restriction.humanized_assignable_values(self, *args)
             end
 
             unless multiple

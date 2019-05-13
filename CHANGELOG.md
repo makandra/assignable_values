@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Compatible changes
 
+- Humanized assignable value methods now also take the include_old_values option (fixes #25)
 
 ## 0.15.1 - 2018-11-05
 
