@@ -353,7 +353,7 @@ There are tests in `spec`. We only accept PRs with tests. To run tests:
 - Create a local test database `assignable_values_test` in both MySQL and PostgreSQL
 - Copy `spec/support/database.sample.yml` to `spec/support/database.yml` and enter your local credentials for the test database
 - Install development dependencies using `bundle install`
-- Run tests using `bundle exec current_rspec`
+- Run tests using `bundle exec rake current_rspec`
 
 We recommend to test large changes against multiple versions of Ruby and multiple dependency sets. Supported combinations are configured in `.travis.yml`. We provide some rake tasks to help with this:
 
