@@ -8,11 +8,11 @@ class Song < ActiveRecord::Base
 
   belongs_to :artist
 
-  attr_accessor :sub_genre, :sub_genres, :multi_genres
+  attr_accessor :virtual_sub_genre, :virtual_sub_genres, :virtual_multi_genres
 
-  if ActiveRecord::VERSION::MAJOR < 4 || !Song.new(:genres => ['test']).genres.is_a?(Array)
+  if ActiveRecord::VERSION::MAJOR < 4 || !Song.new(:multi_genres => ['test']).multi_genres.is_a?(Array)
     # Rails 4 or not postgres
-    serialize :genres
+    serialize :multi_genres
   end
 
 end

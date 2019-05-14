@@ -10,7 +10,7 @@ database.rewrite_schema! do
     t.string :genre
     t.integer :year
     t.integer :duration
-    t.string :genres, :array => true
+    t.string :multi_genres, :array => true
   end
 
   create_table :vinyl_recordings do |t|

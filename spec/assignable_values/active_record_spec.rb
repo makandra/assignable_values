@@ -1,6 +1,14 @@
 require 'spec_helper'
 require 'ostruct'
 
+def save_without_validation(record)
+  if ActiveRecord::VERSION::MAJOR < 3
+    record.save(false)
+  else
+    record.save(:validate => false)
+  end
+end
+
 describe AssignableValues::ActiveRecord do
 
   describe '.assignable_values' do
@@ -17,30 +25,30 @@ describe AssignableValues::ActiveRecord do
 
       before :each do
         @klass = Song.disposable_copy do
-          assignable_values_for :sub_genre do
+          assignable_values_for :virtual_sub_genre do
             %w[pop rock]
           end
 
-          assignable_values_for :multi_genres, :multiple => true, :allow_blank => true do
+          assignable_values_for :virtual_multi_genres, :multiple => true, :allow_blank => true do
             %w[pop rock]
           end
         end
       end
 
       it 'should validate that the attribute is allowed' do
-        @klass.new(:sub_genre => 'pop').should be_valid
-        @klass.new(:sub_genre => 'disallowed value').should_not be_valid
+        @klass.new(:virtual_sub_genre => 'pop').should be_valid
+        @klass.new(:virtual_sub_genre => 'disallowed value').should_not be_valid
       end
 
       it 'should not allow nil for the attribute value' do
-        @klass.new(:sub_genre => nil).should_not be_valid
+        @klass.new(:virtual_sub_genre => nil).should_not be_valid
       end
 
       it 'should generate a method returning the humanized value' do
-        song = @klass.new(:sub_genre => 'pop')
-        song.humanized_sub_genre.should == 'Pop music'
-        song.humanized_sub_genre('rock').should == 'Rock music'
-        song.humanized_multi_genre('rock').should == 'Rock music'
+        song = @klass.new(:virtual_sub_genre => 'pop')
+        song.humanized_virtual_sub_genre.should == 'Pop music'
+        song.humanized_virtual_sub_genre('rock').should == 'Rock music'
+        song.humanized_virtual_multi_genre('rock').should == 'Rock music'
       end
 
     end
@@ -51,21 +59,21 @@ describe AssignableValues::ActiveRecord do
 
         before :each do
           @klass = Song.disposable_copy do
-            assignable_values_for :multi_genres, :multiple => true do
+            assignable_values_for :virtual_multi_genres, :multiple => true do
               %w[pop rock]
             end
           end
         end
 
         it 'should validate that the attribute is a subset' do
-          @klass.new(:multi_genres => ['pop']).should be_valid
-          @klass.new(:multi_genres => ['pop', 'rock']).should be_valid
-          @klass.new(:multi_genres => ['pop', 'disallowed value']).should_not be_valid
+          @klass.new(:virtual_multi_genres => ['pop']).should be_valid
+          @klass.new(:virtual_multi_genres => ['pop', 'rock']).should be_valid
+          @klass.new(:virtual_multi_genres => ['pop', 'disallowed value']).should_not be_valid
         end
 
         it 'should not allow nil or [] for allow_blank: false' do
-          @klass.new(:multi_genres => nil).should_not be_valid
-          @klass.new(:multi_genres => []).should_not be_valid
+          @klass.new(:virtual_multi_genres => nil).should_not be_valid
+          @klass.new(:virtual_multi_genres => []).should_not be_valid
         end
 
       end
@@ -74,15 +82,15 @@ describe AssignableValues::ActiveRecord do
 
         before :each do
           @klass = Song.disposable_copy do
-            assignable_values_for :multi_genres, :multiple => true, :allow_blank => true do
+            assignable_values_for :virtual_multi_genres, :multiple => true, :allow_blank => true do
               %w[pop rock]
             end
           end
         end
 
         it 'should allow nil or [] for allow_blank: false' do
-          @klass.new(:multi_genres => nil).should be_valid
-          @klass.new(:multi_genres => []).should be_valid
+          @klass.new(:virtual_multi_genres => nil).should be_valid
+          @klass.new(:virtual_multi_genres => []).should be_valid
         end
 
       end
@@ -99,7 +107,7 @@ describe AssignableValues::ActiveRecord do
               %w[pop rock]
             end
 
-            assignable_values_for :multi_genres, :multiple => true, :allow_blank => true do
+            assignable_values_for :virtual_multi_genres, :multiple => true, :allow_blank => true do
               %w[pop rock]
             end
           end
@@ -166,26 +174,26 @@ describe AssignableValues::ActiveRecord do
         context 'for multiple: true' do
           it 'should raise when trying to humanize a value without an argument' do
             song = @klass.new
-            proc { song.humanized_multi_genre }.should raise_error(ArgumentError)
+            proc { song.humanized_virtual_multi_genre }.should raise_error(ArgumentError)
           end
 
           it 'should generate an instance method to retrieve the humanization of any given value' do
             song = @klass.new(:genre => 'pop')
-            song.humanized_multi_genre('rock').should == 'Rock music'
+            song.humanized_virtual_multi_genre('rock').should == 'Rock music'
           end
 
           it 'should generate a class method to retrieve the humanization of any given value' do
-            @klass.humanized_multi_genre('rock').should == 'Rock music'
+            @klass.humanized_virtual_multi_genre('rock').should == 'Rock music'
           end
 
           it 'should generate an instance method to retrieve the humanizations of all current values' do
             song = @klass.new
-            song.multi_genres = nil
-            song.humanized_multi_genres.should == nil
-            song.multi_genres = []
-            song.humanized_multi_genres.should == []
-            song.multi_genres = ['pop', 'rock']
-            song.humanized_multi_genres.should == ['Pop music', 'Rock music']
+            song.virtual_multi_genres = nil
+            song.humanized_virtual_multi_genres.should == nil
+            song.virtual_multi_genres = []
+            song.humanized_virtual_multi_genres.should == []
+            song.virtual_multi_genres = ['pop', 'rock']
+            song.humanized_virtual_multi_genres.should == ['Pop music', 'Rock music']
           end
         end
       end
@@ -280,43 +288,39 @@ describe AssignableValues::ActiveRecord do
 
         before :each do
           @klass = Song.disposable_copy do
-            assignable_values_for :genres, :multiple => true do
+            assignable_values_for :multi_genres, :multiple => true do
               %w[pop rock]
             end
           end
         end
 
         it 'should validate that the attribute is allowed' do
-          @klass.new(:genres => ['pop']).should be_valid
-          @klass.new(:genres => ['pop', 'rock']).should be_valid
-          @klass.new(:genres => ['pop', 'invalid value']).should_not be_valid
+          @klass.new(:multi_genres => ['pop']).should be_valid
+          @klass.new(:multi_genres => ['pop', 'rock']).should be_valid
+          @klass.new(:multi_genres => ['pop', 'invalid value']).should_not be_valid
         end
 
         it 'should not allow a scalar attribute' do
-          @klass.new(:genres => 'pop').should_not be_valid
+          @klass.new(:multi_genres => 'pop').should_not be_valid
         end
 
         it 'should not allow nil or [] for the attribute value' do
-          @klass.new(:genres => nil).should_not be_valid
-          @klass.new(:genres => []).should_not be_valid
+          @klass.new(:multi_genres => nil).should_not be_valid
+          @klass.new(:multi_genres => []).should_not be_valid
         end
 
         it 'should allow a subset of previously saved values even if that value is no longer allowed' do
-          record = @klass.create!(:genres => ['pop'])
-          record.genres = ['pretend', 'previously', 'valid', 'value']
-          if ActiveRecord::VERSION::MAJOR < 3
-            record.save(false)
-          else
-            record.save(:validate => false) # update without validations for the sake of this test
-          end
+          record = @klass.create!(:multi_genres => ['pop'])
+          record.multi_genres = ['pretend', 'previously', 'valid', 'value']
+          save_without_validation(record) # update without validation for the sake of this test
           record.reload.should be_valid
-          record.genres = ['valid', 'previously', 'pop']
+          record.multi_genres = ['valid', 'previously', 'pop']
           record.should be_valid
         end
 
         it 'should allow a previously saved, blank value even if that value is no longer allowed' do
-          record = @klass.create!(:genres => ['pop'])
-          @klass.update_all(:genres => []) # update without validations for the sake of this test
+          record = @klass.create!(:multi_genres => ['pop'])
+          @klass.update_all(:multi_genres => []) # update without validations for the sake of this test
           record.reload.should be_valid
         end
 
@@ -326,18 +330,18 @@ describe AssignableValues::ActiveRecord do
 
         before :each do
           @klass = Song.disposable_copy do
-            assignable_values_for :genres, :multiple => true, :allow_blank => true do
+            assignable_values_for :multi_genres, :multiple => true, :allow_blank => true do
               %w[pop rock]
             end
           end
         end
 
         it 'should allow nil for the attribute value' do
-          @klass.new(:genres => nil).should be_valid
+          @klass.new(:multi_genres => nil).should be_valid
         end
 
         it 'should allow an empty array as value' do
-          @klass.new(:genres => []).should be_valid
+          @klass.new(:multi_genres => []).should be_valid
         end
 
       end
@@ -752,8 +756,12 @@ describe AssignableValues::ActiveRecord do
           assignable_values_for :genre do
             %w[pop rock]
           end
+
+          assignable_values_for :multi_genres, :multiple => true do
+            %w[pop rock]
+          end
         end
-        record = klass.create!(:genre => 'pop')
+        record = klass.create!(:genre => 'pop', :multi_genres => ['rock'])
         klass.update_all(:genre => 'ballad') # update without validation for the sake of this test
         record.reload.assignable_genres.should == %w[ballad pop rock]
 
@@ -761,6 +769,15 @@ describe AssignableValues::ActiveRecord do
         humanized_genres.collect(&:value).should == %w[ballad pop rock]
         humanized_genres.collect(&:humanized).should == ['Ballad', 'Pop music', 'Rock music']
         humanized_genres.collect(&:to_s).should == ['Ballad', 'Pop music', 'Rock music']
+
+        record.multi_genres = %w[ballad classic]
+        save_without_validation(record) # update without validation for the sake of this test
+        record.reload.multi_genres.should == %w[ballad classic]
+
+        humanized_multi_genres = record.humanized_assignable_multi_genres
+        humanized_multi_genres.collect(&:value).should == %w[ballad classic pop rock]
+        humanized_multi_genres.collect(&:humanized).should == ['Ballad', 'Classic', 'Pop music', 'Rock music']
+        humanized_multi_genres.collect(&:to_s).should == ['Ballad', 'Classic', 'Pop music', 'Rock music']
       end
 
       it 'should not prepend a previously saved value to the top of the list if it is still allowed (bugfix)' do
@@ -800,8 +817,12 @@ describe AssignableValues::ActiveRecord do
           assignable_values_for :genre do
             %w[pop rock]
           end
+
+          assignable_values_for :multi_genres, :multiple => true do
+            %w[pop rock]
+          end
         end
-        record = klass.create!(:genre => 'pop')
+        record = klass.create!(:genre => 'pop', :multi_genres => ['rock'])
         klass.update_all(:genre => 'ballad') # update without validation for the sake of this test
         record.reload.assignable_genres(:include_old_value => false).should == %w[pop rock]
 
@@ -809,6 +830,15 @@ describe AssignableValues::ActiveRecord do
         humanized_genres.collect(&:value).should == %w[pop rock]
         humanized_genres.collect(&:humanized).should == ['Pop music', 'Rock music']
         humanized_genres.collect(&:to_s).should == ['Pop music', 'Rock music']
+
+        record.multi_genres = %w[ballad classic]
+        save_without_validation(record) # update without validation for the sake of this test
+        record.reload.multi_genres.should == %w[ballad classic]
+
+        humanized_multi_genres = record.humanized_assignable_multi_genres(:include_old_value => false)
+        humanized_multi_genres.collect(&:value).should == %w[pop rock]
+        humanized_multi_genres.collect(&:humanized).should == ['Pop music', 'Rock music']
+        humanized_multi_genres.collect(&:to_s).should == ['Pop music', 'Rock music']
       end
 
       it 'should allow omitting a previously saved association' do

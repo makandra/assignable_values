@@ -15,7 +15,10 @@ en:
       multi_genres:
         pop: 'Pop music'
         rock: 'Rock music'
-      sub_genre:
+      virtual_multi_genres:
+        pop: 'Pop music'
+        rock: 'Rock music'
+      virtual_sub_genre:
         pop: 'Pop music'
         rock: 'Rock music'
       year:
