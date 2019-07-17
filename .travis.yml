@@ -1,5 +1,7 @@
 language: ruby
 
+dist: trusty
+
 rvm:
   - 1.8.7
   - 2.1.8
@@ -65,10 +67,6 @@ addons:
 sudo: false
 
 cache: bundler
-
-notifications:
-  email:
-    - fail@makandra.de
 
 before_script:
   - psql -c 'create database assignable_values_test;' -U postgres
