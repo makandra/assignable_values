@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Runtime dependencies
-gem 'activerecord', '~>6.0.0beta'
+gem 'activerecord', '~>6.0.0'
 gem 'i18n'
 gem 'pg', '<1'
 
