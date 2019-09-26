@@ -91,7 +91,7 @@ The default is applied to new records:
 Defaults can be procs:
 
     class Song < ActiveRecord::Base
-      assignable_values_for :genre, default: proc { Date.today.year } do
+      assignable_values_for :year, default: proc { Date.today.year } do
         1980 .. 2011
       end
     end
@@ -205,7 +205,7 @@ You can restrict `belongs_to` associations in the same manner as scalar attribut
 
     end
 
-Listing and validating als works the same:
+Listing and validating also works the same:
 
     chicane = Artist.create!(name: 'Chicane', signed: true)
     lt2 = Artist.create!(name: 'LT2', signed: false)
