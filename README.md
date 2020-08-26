@@ -350,7 +350,8 @@ Development
 There are tests in `spec`. We only accept PRs with tests. To run tests:
 
 - Install Ruby 2.3.8
-- Create a local test database `assignable_values_test` in both MySQL and PostgreSQL
+- Create a local test database `assignable_values_test` in both MySQL and PostgreSQL (see
+  `.travis.yml` for commands to do so)
 - Copy `spec/support/database.sample.yml` to `spec/support/database.yml` and enter your local
   credentials for the test databases (postgres entry is not required if you are using a socket
   connection)
