@@ -48,25 +48,31 @@ module AssignableValues
         end
 
         def assignable_values(record, options = {})
-          assignable_values = []
+          additional_assignable_values = []
           current_values = assignable_values_from_record_or_delegate(record)
 
           if options.fetch(:include_old_value, true) && has_previously_saved_value?(record)
             old_value = previously_saved_value(record)
             if @options[:multiple]
               if old_value.is_a?(Array)
-                assignable_values |= old_value
+                additional_assignable_values |= old_value
               end
             elsif !old_value.blank? && !current_values.include?(old_value)
-              assignable_values << old_value
+              additional_assignable_values << old_value
             end
           end
 
-          assignable_values += current_values
           if options[:decorate]
-            assignable_values = decorate_values(assignable_values)
+            current_values = decorate_values(current_values)
+            additional_assignable_values = decorate_values(additional_assignable_values)
           end
-          assignable_values
+
+          if additional_assignable_values.present?
+            # will not keep current_values scoped
+            additional_assignable_values + current_values
+          else
+            current_values
+          end
         end
 
         private
@@ -94,7 +100,21 @@ module AssignableValues
         def assignable_single_value?(record, value)
           (has_previously_saved_value?(record) && value == previously_saved_value(record)) ||
             (value.blank? && allow_blank?(record)) ||
-            assignable_values(record, :include_old_value => false).include?(value)
+            included_in_assignable_values?(record, value)
+        end
+
+        def included_in_assignable_values?(record, value)
+          values_or_scope = assignable_values(record, :include_old_value => false)
+
+          if is_scope?(values_or_scope)
+            values_or_scope.exists?(value.id)
+          else
+            values_or_scope.include?(value)
+          end
+        end
+
+        def is_scope?(object)
+          object.respond_to?(:scoped) || object.respond_to?(:all)
         end
 
         def assignable_multi_value?(record, value)
@@ -217,9 +237,9 @@ module AssignableValues
 
         def assignable_values_from_record_or_delegate(record)
           if delegate?
-            assignable_values_from_delegate(record).to_a
+            assignable_values_from_delegate(record)
           else
-            record.instance_exec(&@values).to_a
+            record.instance_exec(&@values)
           end
         end
 

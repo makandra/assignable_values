@@ -448,7 +448,7 @@ describe AssignableValues::ActiveRecord do
         record.should be_valid
       end
 
-      it 'sould not allow nil for an association (the "previously saved value") if the record is new' do
+      it 'should not allow nil for an association (the "previously saved value") if the record is new' do
         allowed_association = Artist.create!
         klass = Song.disposable_copy
         record = klass.new(:artist => nil)
@@ -508,6 +508,47 @@ describe AssignableValues::ActiveRecord do
         record.stub(:artist => association, :artist_id => association.id) # This is a fresh association: The associated object's id matches the foreign key.
         record.should_receive(:artist).with(no_args).and_return(association)
         record.valid?
+      end
+
+      it 'should not load all records to memory when assignable values are scoped' do
+        unless ::ActiveRecord::VERSION::MAJOR < 3 # somehow rails 2 still initializes Objects during the scope.exists?-call
+          initialized_artists_count = 0
+          MyArtist = Artist.disposable_copy
+
+          MyArtist.class_eval do
+            after_initialize :increase_initialized_count
+
+            define_method :increase_initialized_count do
+              initialized_artists_count += 1
+            end
+          end
+
+          klass = Song.disposable_copy
+
+          klass.class_eval do
+            assignable_values_for :artist do
+              if ::ActiveRecord::VERSION::MAJOR < 4
+                MyArtist.scoped
+              else
+                MyArtist.all
+              end
+            end
+          end
+
+          artist = MyArtist.create!
+          initialized_artists_count.should == 1
+
+          song = klass.new(:artist => artist)
+
+          song.valid?
+          initialized_artists_count.should == 1
+
+          song.assignable_artists
+          initialized_artists_count.should == 1
+
+          song.assignable_artists.to_a
+          initialized_artists_count.should == 2
+        end
       end
 
     end
@@ -730,7 +771,7 @@ describe AssignableValues::ActiveRecord do
         klass.new.assignable_genres.should == %w[pop rock]
       end
 
-      it 'should call #to_a on the list of assignable values, allowing ranges and scopes to be passed as allowed value descriptors' do
+      it 'should work with ranges' do
         klass = Song.disposable_copy do
           assignable_values_for :year do
             1999..2001
