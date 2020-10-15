@@ -107,7 +107,7 @@ module AssignableValues
           values_or_scope = assignable_values(record, :include_old_value => false)
 
           if is_scope?(values_or_scope)
-            values_or_scope.exists?(value.id)
+            values_or_scope.exists?(value.id) unless value.nil?
           else
             values_or_scope.include?(value)
           end

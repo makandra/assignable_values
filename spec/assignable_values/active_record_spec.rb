@@ -510,44 +510,60 @@ describe AssignableValues::ActiveRecord do
         record.valid?
       end
 
-      it 'should not load all records to memory when assignable values are scoped' do
-        unless ::ActiveRecord::VERSION::MAJOR < 3 # somehow rails 2 still initializes Objects during the scope.exists?-call
-          initialized_artists_count = 0
-          MyArtist = Artist.disposable_copy
+      context 'when assignable values are provided as an ActiveRecord scope' do
+        MyArtist = Artist.disposable_copy
+        let(:klass) { Song.disposable_copy }
 
-          MyArtist.class_eval do
-            after_initialize :increase_initialized_count
-
-            define_method :increase_initialized_count do
-              initialized_artists_count += 1
-            end
-          end
-
-          klass = Song.disposable_copy
-
+        before do
           klass.class_eval do
             assignable_values_for :artist do
               if ::ActiveRecord::VERSION::MAJOR < 4
-                MyArtist.scoped
+                MyArtist.scoped({})
               else
                 MyArtist.all
               end
             end
           end
+        end
 
+        it 'allows assigning a record from the scope' do
           artist = MyArtist.create!
-          initialized_artists_count.should == 1
-
           song = klass.new(:artist => artist)
+          song.should be_valid
+        end
 
-          song.valid?
-          initialized_artists_count.should == 1
+        it 'will not crash during validation when the assigned value is nil' do
+          song = klass.new
+          expect { song.valid? }.to_not raise_error
+          song.errors[:artist_id].should be_present
+        end
 
-          song.assignable_artists
-          initialized_artists_count.should == 1
+        it 'should not load all records into memory' do
+          unless ::ActiveRecord::VERSION::MAJOR < 3 # somehow rails 2 still initializes Objects during the scope.exists?-call
+            initialized_artists_count = 0
 
-          song.assignable_artists.to_a
-          initialized_artists_count.should == 2
+            MyArtist.class_eval do
+              after_initialize :increase_initialized_count
+
+              define_method :increase_initialized_count do
+                initialized_artists_count += 1
+              end
+            end
+
+            artist = MyArtist.create!
+            initialized_artists_count.should == 1
+
+            song = klass.new(:artist => artist)
+
+            song.valid?
+            initialized_artists_count.should == 1
+
+            song.assignable_artists
+            initialized_artists_count.should == 1
+
+            song.assignable_artists.to_a
+            initialized_artists_count.should == 2
+          end
         end
       end
 
