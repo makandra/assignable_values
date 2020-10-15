@@ -236,10 +236,16 @@ module AssignableValues
         end
 
         def assignable_values_from_record_or_delegate(record)
-          if delegate?
+          assignable_values = if delegate?
             assignable_values_from_delegate(record)
           else
             record.instance_exec(&@values)
+          end
+
+          if is_scope?(assignable_values)
+            assignable_values
+          else
+            Array(assignable_values)
           end
         end
 

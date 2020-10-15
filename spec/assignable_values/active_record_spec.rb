@@ -808,6 +808,26 @@ describe AssignableValues::ActiveRecord do
         klass.new.assignable_genres.should == %w[pop rock]
       end
 
+      it 'returns an array when the value block returns a single value' do
+        klass = Song.disposable_copy do
+          assignable_values_for :genre do
+            'techno'
+          end
+        end
+
+        klass.new.assignable_genres.should == ['techno']
+      end
+
+      it 'returns an empty array when the value block returns nothing' do
+        klass = Song.disposable_copy do
+          assignable_values_for :genre do
+            nil
+          end
+        end
+
+        klass.new.assignable_genres.should == []
+      end
+
       it 'should prepend a previously saved value to the top of the list, even if is no longer allowed' do
         klass = Song.disposable_copy do
           assignable_values_for :genre do
