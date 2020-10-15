@@ -8,6 +8,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Compatible changes
 
+## 0.16.3 - 2020-10-15
+
+### Compatible changes
+
+- No longer crashes when assigning `nil` to an attribute with assignable values that are provided as a scope.
+
 ## 0.16.2 - 2020-10-06
 
 ### Compatible changes
