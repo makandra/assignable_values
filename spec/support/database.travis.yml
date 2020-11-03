@@ -1,4 +1,0 @@
-mysql:
-  database: assignable_values_test
-  username: travis
-  password:

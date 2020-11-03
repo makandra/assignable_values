@@ -1,4 +1,4 @@
-assignable_values - Enums on vitamins [![Build Status](https://secure.travis-ci.org/makandra/assignable_values.png?branch=master)](https://travis-ci.org/makandra/assignable_values)
+assignable_values - Enums on vitamins [![Tests](https://github.com/makandra/assignable_values/workflows/Tests/badge.svg)](https://github.com/makandra/assignable_values/actions)
 =====================================
 
 `assignable_values` lets you restrict the values that can be assigned to attributes or associations of ActiveRecord models. You can think of it as enums where the list of allowed values is generated at runtime and the value is checked during validation.
@@ -351,19 +351,19 @@ There are tests in `spec`. We only accept PRs with tests. To run tests:
 
 - Install Ruby 2.3.8
 - Create a local test database `assignable_values_test` in both MySQL and PostgreSQL (see
-  `.travis.yml` for commands to do so)
+  `.github/workflows/test.yml` for commands to do so)
 - Copy `spec/support/database.sample.yml` to `spec/support/database.yml` and enter your local
   credentials for the test databases (postgres entry is not required if you are using a socket
   connection)
 - Install development dependencies using `bundle install`
 - Run tests using `bundle exec rake current_rspec`
 
-We recommend to test large changes against multiple versions of Ruby and multiple dependency sets. Supported combinations are configured in `.travis.yml`. We provide some rake tasks to help with this:
+We recommend to test large changes against multiple versions of Ruby and multiple dependency sets. Supported combinations are configured in `.github/workflows/test.yml`. We provide some rake tasks to help with this:
 
 - Install development dependencies using `bundle exec rake matrix:install`
 - Run tests using `bundle exec rake matrix:spec`
 
-Note that we have configured Travis CI to automatically run tests in all supported Ruby versions and dependency sets after each push. We will only merge pull requests after a green Travis build.
+Note that we have configured GitHub Actions to automatically run tests in all supported Ruby versions and dependency sets after each push. We will only merge pull requests after a green GitHub Actions run.
 
 I'm very eager to keep this gem leightweight and on topic. If you're unsure whether a change would make it into the gem, [talk to me beforehand](mailto:henning.koch@makandra.de).
 

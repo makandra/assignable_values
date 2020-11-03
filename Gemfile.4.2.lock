@@ -24,11 +24,11 @@ GEM
     builder (3.2.2)
     database_cleaner (1.5.3)
     diff-lcs (1.2.5)
-    gemika (0.3.2)
+    gemika (0.5.0)
     i18n (0.7.0)
     json (1.8.3)
     minitest (5.9.1)
-    mysql2 (0.3.20)
+    mysql2 (0.4.10)
     rake (10.3.2)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
@@ -59,12 +59,12 @@ DEPENDENCIES
   activerecord (~> 4.2.0)
   assignable_values!
   database_cleaner
-  gemika
+  gemika (>= 0.5.0)
   i18n (~> 0.7.0)
-  mysql2 (~> 0.3.17)
+  mysql2
   rake
   rspec (~> 3.4)
   rspec_candy
 
 BUNDLED WITH
-   1.16.4
+   2.1.4
