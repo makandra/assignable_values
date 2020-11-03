@@ -1,0 +1,104 @@
+---
+name: Tests
+'on':
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+jobs:
+  test_mysql:
+    runs-on: ubuntu-20.04
+    services:
+      mysql:
+        image: mysql:5.6
+        env:
+          MYSQL_ROOT_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - ruby: 2.3.8
+          gemfile: Gemfile.4.2
+        - ruby: 2.3.8
+          gemfile: Gemfile.5.0
+        - ruby: 2.3.8
+          gemfile: Gemfile.5.1
+        - ruby: 2.4.2
+          gemfile: Gemfile.5.0
+        - ruby: 2.4.2
+          gemfile: Gemfile.5.1
+        - ruby: 2.5.3
+          gemfile: Gemfile.5.0
+        - ruby: 2.5.3
+          gemfile: Gemfile.5.1
+    env:
+      BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "${{ matrix.ruby }}"
+    - name: Install database client
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y mysql-client libmariadbclient-dev
+    - name: Bundle
+      run: |
+        gem install bundler:2.1.4
+        bundle install --no-deployment
+    - name: Setup databases
+      run: |
+        mysql -e 'create database IF NOT EXISTS assignable_values_test;' -u root --password=password -P 3306 -h 127.0.0.1
+    - name: Run tests
+      run: bundle exec rspec
+  test_pg:
+    runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: "--health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5"
+        ports:
+        - 5432:5432
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - ruby: 2.3.8
+          gemfile: Gemfile.5.1.pg
+        - ruby: 2.4.2
+          gemfile: Gemfile.5.1.pg
+        - ruby: 2.5.3
+          gemfile: Gemfile.5.1.pg
+        - ruby: 2.5.3
+          gemfile: Gemfile.6.0.pg
+    env:
+      BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "${{ matrix.ruby }}"
+    - name: Setup database
+      run: |
+        sudo apt-get install -y postgresql-client
+        PGPASSWORD=postgres psql -c 'create database assignable_values_test;' -U postgres -p 5432 -h localhost
+    - name: Bundle
+      run: |
+        gem install bundler:2.1.4
+        bundle install --no-deployment
+    - name: Run tests
+      run: bundle exec rspec
