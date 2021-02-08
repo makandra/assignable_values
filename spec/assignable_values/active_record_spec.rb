@@ -828,6 +828,16 @@ describe AssignableValues::ActiveRecord do
         klass.new.assignable_genres.should == []
       end
 
+      it 'should not return saved value twice (BUGFIX)' do
+        klass = Song.disposable_copy do
+          assignable_values_for :multi_genres, :multiple => true do
+            %w[pop rock]
+          end
+        end
+        record = klass.create!(:multi_genres => ['pop'])
+        record.assignable_multi_genres.should eq ['pop', 'rock']
+      end
+
       it 'should prepend a previously saved value to the top of the list, even if is no longer allowed' do
         klass = Song.disposable_copy do
           assignable_values_for :genre do
