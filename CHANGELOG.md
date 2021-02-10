@@ -8,6 +8,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Compatible changes
 
+## 0.16.5 - 2021-01-10
+
+### Compatible changes
+
+- Previously assigned values are no longer duplicated when calling the assignable_values method (fixes #32)
+
 ## 0.16.4 - 2020-10-15
 
 ### Compatible changes
