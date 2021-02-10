@@ -55,7 +55,7 @@ module AssignableValues
             old_value = previously_saved_value(record)
             if @options[:multiple]
               if old_value.is_a?(Array)
-                additional_assignable_values |= old_value
+                additional_assignable_values = old_value
               end
             elsif !old_value.blank? && !current_values.include?(old_value)
               additional_assignable_values << old_value
@@ -69,7 +69,7 @@ module AssignableValues
 
           if additional_assignable_values.present?
             # will not keep current_values scoped
-            additional_assignable_values + current_values
+            additional_assignable_values | current_values
           else
             current_values
           end
