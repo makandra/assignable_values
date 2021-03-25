@@ -122,7 +122,7 @@ describe AssignableValues::ActiveRecord do
           record = @klass.new(:genre => 'disallowed value')
           record.valid?
           errors = record.errors[:genre]
-          error = errors.respond_to?(:first) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
+          error = errors.is_a?(Array) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
           error.should == I18n.t('errors.messages.inclusion')
           error.should == 'is not included in the list'
         end
@@ -274,7 +274,7 @@ describe AssignableValues::ActiveRecord do
           record = @klass.new(:genre => 'disallowed value')
           record.valid?
           errors = record.errors[:genre]
-          error = errors.respond_to?(:first) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
+          error = errors.is_a?(Array) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
           error.should == 'should be something different'
         end
 
@@ -373,7 +373,7 @@ describe AssignableValues::ActiveRecord do
         record = klass.new(:artist => disallowed_association)
         record.valid?
         errors = record.errors[:artist_id]
-        error = errors.respond_to?(:first) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
+        error = errors.is_a?(Array) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
         error.should == I18n.t('errors.messages.inclusion')
       end
 

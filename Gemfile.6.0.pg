@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
 
 # Runtime dependencies
-gem 'activerecord', '~>6.1.0'
+gem 'activerecord', '~>6.0.0'
 gem 'i18n'
-gem 'pg', '1.1'
+gem 'pg', '<1'
 
 # Development dependencies
 gem 'rake'

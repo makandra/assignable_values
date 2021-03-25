@@ -83,7 +83,7 @@ jobs:
         - ruby: 2.5.3
           gemfile: Gemfile.5.1.pg
         - ruby: 2.5.3
-          gemfile: Gemfile.6.1.pg
+          gemfile: Gemfile.6.0.pg
     env:
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
     steps:
