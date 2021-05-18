@@ -53,6 +53,20 @@ describe AssignableValues::ActiveRecord do
 
     end
 
+    context 'when the options are passed as a hash' do
+      before :each do
+        @klass = Song.disposable_copy do
+          assignable_values_for(:virtual_multi_genres, { :multiple => true, :allow_blank => true }) do
+            %w[pop rock]
+          end
+        end
+      end
+
+      it 'should not raise an error' do
+        @klass.new(:virtual_multi_genres => ['rock']).should be_valid
+      end
+    end
+
     context 'when validating virtual attributes with multiple: true' do
 
       context 'with allow_blank: false' do
