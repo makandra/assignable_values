@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Breaking changes
 
+- Remove no longer supported ruby versions (2.3.8, 2.4.2)
+
 ### Compatible changes
 
 ## 0.16.5 - 2021-01-10
