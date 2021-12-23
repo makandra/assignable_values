@@ -38,10 +38,6 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: "${{ matrix.ruby }}"
-    - name: Install database client
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y mysql-client libmariadbclient-dev
     - name: Bundle
       run: |
         gem install bundler:2.1.4
@@ -72,8 +68,12 @@ jobs:
           gemfile: Gemfile.6.1.pg
         - ruby: 2.7.3
           gemfile: Gemfile.6.1.pg
+        - ruby: 2.7.3
+          gemfile: Gemfile.7.0.pg
         - ruby: 3.0.1
           gemfile: Gemfile.6.1.pg
+        - ruby: 3.0.1
+          gemfile: Gemfile.7.0.pg
     env:
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
     steps:
