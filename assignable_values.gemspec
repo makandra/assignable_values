@@ -11,6 +11,14 @@ Gem::Specification.new do |s|
   s.description = s.summary
   s.license = 'MIT'
 
+  if RUBY_VERSION.to_f >= 2.0
+    s.metadata = {
+      'bug_tracker_uri' => 'https://github.com/makandra/assignable_values/issues',
+      'changelog_uri' => 'https://github.com/makandra/assignable_values/blob/master/CHANGELOG.md',
+      'rubygems_mfa_required' => 'true',
+    }
+  end
+
   s.files         = `git ls-files`.split($\)
   s.test_files    = s.files.grep(%r{^spec/})
   s.require_paths = ["lib"]
