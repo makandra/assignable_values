@@ -20,7 +20,7 @@ GEM
     concurrent-ruby (1.1.5)
     database_cleaner (1.7.0)
     diff-lcs (1.3)
-    gemika (0.5.0)
+    gemika (0.7.1)
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
     minitest (5.15.0)
@@ -54,7 +54,7 @@ DEPENDENCIES
   activerecord (~> 7.0.0)
   assignable_values!
   database_cleaner
-  gemika (>= 0.5.0)
+  gemika
   i18n
   pg (= 1.1)
   rake

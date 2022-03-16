@@ -10,7 +10,7 @@ gem 'rake'
 gem 'database_cleaner'
 gem 'rspec'
 gem 'rspec_candy'
-gem 'gemika', '>= 0.5.0'
+gem 'gemika'
 
 # Gem under test
 gem 'assignable_values', :path => '.'
