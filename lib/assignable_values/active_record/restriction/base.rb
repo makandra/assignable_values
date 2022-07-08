@@ -63,8 +63,8 @@ module AssignableValues
           end
 
           if options[:decorate]
-            current_values = decorate_values(current_values)
-            additional_assignable_values = decorate_values(additional_assignable_values)
+            current_values = decorate_values(current_values, record.class)
+            additional_assignable_values = decorate_values(additional_assignable_values, record.class)
           end
 
           if additional_assignable_values.present?
@@ -146,7 +146,7 @@ module AssignableValues
           raise NotImplementedError
         end
 
-        def decorate_values(values)
+        def decorate_values(values, _klass)
           values
         end
 

@@ -1024,6 +1024,36 @@ describe AssignableValues::ActiveRecord do
           years.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire struck back', 'The year the Jedi returned']
         end
 
+        context 'when inheriting from a model with defined assignable_values' do
+
+          let(:base_class) do
+            Class.new(Song) do
+              assignable_values_for :year do
+                [1977, 1980, 1983]
+              end
+            end
+          end
+
+          it 'allows to override humanization for inherited values' do
+            Song::SeriousRepresentation = Class.new(base_class)
+
+            years = Song::SeriousRepresentation.new.humanized_assignable_years
+            years.collect(&:humanized).should == ['year 1977', 'year 1980', 'year 1983']
+          end
+
+          it 'looks up humanization in parent classes if the translation is not overridden' do
+            Song::Extension = Class.new(base_class)
+            Song::ExtendedExtension = Class.new(Song::Extension)
+
+            years_1 = Song::Extension.new.humanized_assignable_years
+            years_1.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire struck back', 'The year the Jedi returned']
+
+            years_2 = Song::ExtendedExtension.new.humanized_assignable_years
+            years_2.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire struck back', 'The year the Jedi returned']
+          end
+
+        end
+
         context 'legacy methods for API compatibility' do
 
           it 'should define a method that return pairs of values and their humanization' do

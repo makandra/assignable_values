@@ -10,7 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Compatible changes
 
--
+- Allow to override humanization for inherited assignable_values
 
 ## 0.16.6 - 2022-03-16
 

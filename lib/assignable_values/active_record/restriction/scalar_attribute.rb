@@ -10,21 +10,28 @@ module AssignableValues
           define_humanized_assignable_values_instance_method
         end
 
-        def humanized_value(value)
+        def humanized_value(klass, value)
           if value.present?
-            dictionary_scope = "assignable_values.#{model.name.underscore}.#{property}"
-            I18n.t(value, :scope => dictionary_scope, :default => default_humanization_for_value(value))
+            humanization_from_i18n(klass, value) || default_humanization_for_value(value)
           end
         end
 
         def humanized_assignable_values(record, options = {})
           values = assignable_values(record, options)
           values.collect do |value|
-            HumanizedValue.new(value, humanized_value(value))
+            HumanizedValue.new(value, humanized_value(record.class, value))
           end
         end
 
         private
+
+        def humanization_from_i18n(klass, value)
+          klass.lookup_ancestors.select(&:name).find do |klass|
+            dictionary_scope = :"assignable_values.#{klass.model_name.i18n_key}.#{property}"
+            translation = I18n.translate(value, scope: dictionary_scope, default: nil)
+            break translation unless translation.nil?
+          end
+        end
 
         def default_humanization_for_value(value)
           if value.is_a?(String)
@@ -38,7 +45,7 @@ module AssignableValues
           restriction = self
           enhance_model_singleton do
             define_method :"humanized_#{restriction.property.to_s.singularize}" do |given_value|
-              restriction.humanized_value(given_value)
+              restriction.humanized_value(self, given_value)
             end
           end
         end
@@ -53,7 +60,7 @@ module AssignableValues
               end
               given_value = args[0]
               value = given_value || send(restriction.property)
-              restriction.humanized_value(value)
+              restriction.humanized_value(self.class, value)
             end
 
             if multiple
@@ -61,7 +68,7 @@ module AssignableValues
                 values = send(restriction.property)
                 if values.respond_to?(:map)
                   values.map do |value|
-                    restriction.humanized_value(value)
+                    restriction.humanized_value(self.class, value)
                   end
                 else
                   values
@@ -88,11 +95,11 @@ module AssignableValues
           end
         end
 
-        def decorate_values(values)
+        def decorate_values(values, klass)
           restriction = self
           values.collect do |value|
             if value.is_a?(String)
-              humanization = restriction.humanized_value(value)
+              humanization = restriction.humanized_value(klass, value)
               value = HumanizableString.new(value, humanization)
             end
             value
@@ -110,8 +117,6 @@ module AssignableValues
         def previously_saved_value(record)
           value_was(record)
         end
-
-        private
 
         def value_was(record)
           if record.respond_to?(:attribute_in_database)

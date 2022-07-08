@@ -73,6 +73,24 @@ A good way to populate a `<select>` tag with pairs of internal values and human 
 
     form.collection_select :genre, form.object.humanized_assignable_genres, :value, :humanized
 
+#### Humanized labels and inheritance
+
+For models that inherit assignable values you can override the humanized labels:
+
+    class FunnySong < Song
+      ...
+    end
+
+    en:
+      assignable_values:
+        funny_song:
+          genre:
+            pop: 'The stuff you hear on mainstream radio all day long'
+            rock: 'A lot of electric guitars and drums'
+            electronic: 'Whatever David Guetta does'
+
+If no humanization is provided for the child model (i.e. the `funny_song.genre` key) humanization will fall back to the
+parent model (`song`).
 
 ### Defining default values
 
