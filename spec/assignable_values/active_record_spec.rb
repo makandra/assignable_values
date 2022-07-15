@@ -1011,7 +1011,7 @@ describe AssignableValues::ActiveRecord do
           end
           years = klass.new.humanized_assignable_years
           years.collect(&:value).should == [1977, 1980, 1983]
-          years.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire stroke back', 'The year the Jedi returned']
+          years.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire struck back', 'The year the Jedi returned']
         end
 
         it 'should properly look up humanizations for namespaced models' do
@@ -1021,7 +1021,7 @@ describe AssignableValues::ActiveRecord do
             end
           end
           years = klass.new.humanized_assignable_years
-          years.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire stroke back', 'The year the Jedi returned']
+          years.collect(&:humanized).should == ['The year a new hope was born', 'The year the Empire struck back', 'The year the Jedi returned']
         end
 
         context 'legacy methods for API compatibility' do
