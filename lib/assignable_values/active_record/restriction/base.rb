@@ -5,11 +5,24 @@ module AssignableValues
 
         attr_reader :model, :property, :options, :values, :default, :secondary_default
 
+        SUPPORTED_OPTIONS = [
+          :allow_blank,
+          :decorate,
+          :default,
+          :include_old_value,
+          :message,
+          :multiple,
+          :secondary_default,
+          :through,
+        ].freeze
+        private_constant :SUPPORTED_OPTIONS
+
         def initialize(model, property, options, &values)
           @model = model
           @property = property
           @options = options
           @values = values
+          validate_supported_options!
           ensure_values_given
           setup_default
           define_assignable_values_method
@@ -274,8 +287,14 @@ module AssignableValues
           @values or @options[:through] or raise NoValuesGiven, 'You must supply the list of assignable values by either a block or :through option'
         end
 
+        def validate_supported_options!
+          unsupported_options = @options.keys - SUPPORTED_OPTIONS
+          if unsupported_options.any?
+            raise UnsupportedOption,
+              "The following options are not supported: #{unsupported_options.map { |o| ":#{o}" }.join(', ')}"
+          end
+        end
       end
     end
   end
 end
-
