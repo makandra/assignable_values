@@ -21,6 +21,14 @@ describe AssignableValues::ActiveRecord do
       end.to raise_error(AssignableValues::NoValuesGiven)
     end
 
+    it 'should raise an error when called with unsupported options' do
+      expect do
+        Song.disposable_copy do
+          assignable_values_for :genre, unsupported_option: 42
+        end
+      end.to raise_error(AssignableValues::UnsupportedOption, 'The following options are not supported: :unsupported_option')
+    end
+
     context 'when validating virtual attributes' do
 
       before :each do
