@@ -10,10 +10,15 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Compatible changes
 
+-
+
+
+
+## 0.18.1 - 2023-09-06
+
+### Compatible changes
+
 - Calling `assignable_values_for` with unsupported options will raise an error.
-
-
-
 
 ## 0.18.0 - 2023-01-24
 
