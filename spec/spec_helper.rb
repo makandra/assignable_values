@@ -10,7 +10,11 @@ I18n.enforce_available_locales = true
 I18n.load_path = [File.join(File.dirname(__FILE__), 'support/i18n.yml')]
 I18n.default_locale = :en
 
-ActiveRecord::Base.default_timezone = :local
+if ActiveRecord.respond_to?(:default_timezone)
+  ActiveRecord.default_timezone = :local
+else
+  ActiveRecord::Base.default_timezone = :local
+end
 
 Dir["#{File.dirname(__FILE__)}/support/*.rb"].sort.each {|f| require f}
 
