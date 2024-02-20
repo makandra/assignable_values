@@ -10,7 +10,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Compatible changes
 
--
+- Add support for Ruby 3.3
+- Test against ActiveRecord 7.1
 
 ## 1.0.0 - 2024-02-14
 
