@@ -5,7 +5,7 @@ assignable_values - Enums on vitamins [![Tests](https://github.com/makandra/assi
 
 We carefully enhanced the core enum functionality with small tweaks that are useful for web forms, internationalized applications and common authorization patterns.
 
-`assignable_values` is tested with Rails 5.1 and 6.1 on Ruby 2.5, 2.7 and 3.0.
+`assignable_values` is tested with Rails 5.1, 6.1 and 7.0 on Ruby 2.5, 2.7 and 3.2.
 
 
 Restricting scalar attributes
