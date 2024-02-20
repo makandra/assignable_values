@@ -69,11 +69,11 @@ jobs:
         - ruby: 2.7.3
           gemfile: Gemfile.6.1.pg
         - ruby: 2.7.3
-          gemfile: Gemfile.7.0.pg
-        - ruby: 3.2.0
+          gemfile: Gemfile.7.1.pg
+        - ruby: 3.3.0
           gemfile: Gemfile.6.1.pg
-        - ruby: 3.2.0
-          gemfile: Gemfile.7.0.pg
+        - ruby: 3.3.0
+          gemfile: Gemfile.7.1.pg
     env:
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
     steps:
