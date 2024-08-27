@@ -16,5 +16,6 @@ module AssignableValues
   end
 end
 
-ActiveRecord::Base.send(:extend, AssignableValues::ActiveRecord)
-
+ActiveSupport.on_load(:active_record) do
+  extend(AssignableValues::ActiveRecord)
+end
