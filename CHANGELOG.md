@@ -12,6 +12,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 -
 
+## 1.0.1 - 2024-08-27
+
+- Hook into railties correctly
+
 ## 1.0.0 - 2024-02-14
 
 - This gem has been in productive use for 12 years now, time for a 1.0 release! 🥳
