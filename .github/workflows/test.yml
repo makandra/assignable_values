@@ -84,6 +84,7 @@ jobs:
         ruby-version: "${{ matrix.ruby }}"
     - name: Setup database
       run: |
+        sudo apt-get update
         sudo apt-get install -y postgresql-client
         PGPASSWORD=postgres psql -c 'create database assignable_values_test;' -U postgres -p 5432 -h localhost
     - name: Bundle
