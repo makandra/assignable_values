@@ -11,6 +11,7 @@ database.rewrite_schema! do
     t.integer :year
     t.integer :duration
     t.string :multi_genres, :array => true
+    t.json :metadata
   end
 
   create_table :vinyl_recordings do |t|
