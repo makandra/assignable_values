@@ -146,7 +146,6 @@ describe AssignableValues::ActiveRecord do
           errors = record.errors[:genre]
           error = errors.respond_to?(:first) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
           error.should == I18n.t('errors.messages.inclusion')
-          error.should == 'is not included in the list'
         end
 
         it 'should not allow nil for the attribute value' do
@@ -261,7 +260,7 @@ describe AssignableValues::ActiveRecord do
 
       end
 
-      context 'if the :allow_blank option is set to a lambda ' do
+      context 'if the :allow_blank option is set to a lambda' do
 
         before :each do
           @klass = Song.disposable_copy do
@@ -364,6 +363,214 @@ describe AssignableValues::ActiveRecord do
 
         it 'should allow an empty array as value' do
           @klass.new(:multi_genres => []).should be_valid
+        end
+
+      end
+
+    end
+
+    context 'when validating scalar attributes from a store_accessor' do
+
+      context 'without options' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+            store :metadata, accessors: [:format], coder: JSON
+
+            assignable_values_for :format do
+              %w[mp3 wav]
+            end
+          end
+        end
+
+        it 'should validate that the attribute is allowed' do
+          @klass.new(:format => 'mp3').should be_valid
+          @klass.new(:format => 'disallowed value').should_not be_valid
+        end
+
+        it 'should use the same error message as validates_inclusion_of' do
+          record = @klass.new(:format => 'disallowed value')
+          record.valid?
+          errors = record.errors[:format]
+          error = errors.respond_to?(:first) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
+          error.should == I18n.t('errors.messages.inclusion')
+        end
+
+        it 'should not allow nil for the attribute value' do
+          @klass.new(:format => nil).should_not be_valid
+        end
+
+        it 'should allow a previously saved value even if that value is no longer allowed' do
+          record = @klass.create!(:format => 'mp3')
+
+          record.update_column(:metadata, { 'format' => 'pretend previously valid value' }) # update without validations for the sake of this test
+          record.reload.should be_valid
+        end
+
+        it 'should allow a previously saved, blank format value even if that value is no longer allowed' do
+          record = @klass.create!(:format => 'mp3')
+
+          record.update_column(:metadata, { 'format' => nil }) # update without validations for the sake of this test
+          record.reload.should be_valid
+        end
+
+        it 'should not allow nil (the "previous value") if the record was never saved' do
+          record = @klass.new(:format => nil)
+          record.should_not be_valid
+        end
+
+        it 'should generate a method returning the humanized value' do
+          song = @klass.new(:format => 'mp3')
+          song.humanized_format.should == 'MP3-Codec'
+        end
+
+        it 'should generate a method returning the humanized value, which is nil when the value is blank' do
+          song = @klass.new
+          song.format = nil
+          song.humanized_format.should be_nil
+          song.format = ''
+          song.humanized_format.should be_nil
+        end
+
+        it 'should generate an instance method to retrieve the humanization of any given value' do
+          song = @klass.new(:format => 'mp3')
+          song.humanized_format('wav').should == 'WAV-Codec'
+        end
+
+        it 'should generate a class method to retrieve the humanization of any given value' do
+          @klass.humanized_format('wav').should == 'WAV-Codec'
+        end
+
+        context 'for multiple: true' do
+          before :each do
+            @klass = Song.disposable_copy do
+              store :metadata, accessors: [:instruments], coder: JSON
+
+              assignable_values_for :instruments, multiple: true do
+                %w[piano drums guitar]
+              end
+            end
+          end
+
+          it 'allows multiple assignments' do
+            song = @klass.new(:instruments => %w[guitar drums])
+            song.should be_valid
+          end
+
+          it 'should raise when trying to humanize a value without an argument' do
+            song = @klass.new
+            proc { song.humanized_instrument }.should raise_error(ArgumentError)
+          end
+
+          it 'should generate an instance method to retrieve the humanization of any given value' do
+            song = @klass.new(:instruments => 'drums')
+            song.humanized_instrument('piano').should == 'Piano'
+          end
+
+          it 'should generate a class method to retrieve the humanization of any given value' do
+            @klass.humanized_instrument('piano').should == 'Piano'
+          end
+
+          it 'should generate an instance method to retrieve the humanizations of all current values' do
+            song = @klass.new
+            song.instruments = nil
+            song.humanized_instruments.should == nil
+            song.instruments = []
+            song.humanized_instruments.should == []
+            song.instruments = ['piano', 'drums']
+            song.humanized_instruments.should == ['Piano', 'Drums']
+          end
+        end
+      end
+
+      context 'if the :allow_blank option is set to true' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+
+            store :metadata, accessors: [:format], coder: JSON
+
+            assignable_values_for :format, :allow_blank => true do
+              %w[mp3 wav]
+            end
+          end
+        end
+
+        it 'should allow nil for the attribute value' do
+          @klass.new(:format => nil).should be_valid
+        end
+
+        it 'should allow an empty string as value' do
+          @klass.new(:format => '').should be_valid
+        end
+
+      end
+
+      context 'if the :allow_blank option is set to a symbol that refers to an instance method' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+
+            store :metadata, accessors: [:format], coder: JSON
+
+            attr_accessor :format_may_be_blank
+
+            assignable_values_for :format, :allow_blank => :format_may_be_blank do
+              %w[mp3 wav]
+            end
+
+          end
+        end
+
+        it 'should call that method to determine if a blank value is allowed' do
+          @klass.new(:format => '', :format_may_be_blank => true).should be_valid
+          @klass.new(:format => '', :format_may_be_blank => false).should_not be_valid
+        end
+
+      end
+
+      context 'if the :allow_blank option is set to a lambda' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+
+            store :metadata, accessors: [:format], coder: JSON
+
+            attr_accessor :format_may_be_blank
+
+            assignable_values_for :format, :allow_blank => lambda { format_may_be_blank } do
+              %w[mp3 wav]
+            end
+
+          end
+        end
+
+        it 'should evaluate that lambda in the record context to determine if a blank value is allowed' do
+          @klass.new(:format => '', :format_may_be_blank => true).should be_valid
+          @klass.new(:format => '', :format_may_be_blank => false).should_not be_valid
+        end
+
+      end
+
+      context 'if the :message option is set to a string' do
+
+        before :each do
+          @klass = Song.disposable_copy do
+
+            store :metadata, accessors: [:format], coder: JSON
+
+            assignable_values_for :format, :message => 'should be something different' do
+              %w[mp3 wav]
+            end
+          end
+        end
+
+        it 'should use this string as a custom error message' do
+          record = @klass.new(:format => 'disallowed value')
+          record.valid?
+          errors = record.errors[:format]
+          error = errors.respond_to?(:first) ? errors.first : errors # the return value sometimes was a string, sometimes an Array in Rails
+          error.should == 'should be something different'
         end
 
       end

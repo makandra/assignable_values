@@ -107,10 +107,10 @@ module AssignableValues
         end
 
         def has_previously_saved_value?(record)
-          if record.respond_to?(:attribute_in_database)
-            !record.new_record?  # Rails >= 5.1
-          else
-            !record.new_record? && record.respond_to?(value_was_method) # Rails <= 5.0
+          if record.respond_to?(:attribute_in_database) # Rails >= 5.1
+            !record.new_record?
+          else # Rails <= 5.0
+            !record.new_record? && record.respond_to?(value_was_method)
           end
         end
 
@@ -119,10 +119,10 @@ module AssignableValues
         end
 
         def value_was(record)
-          if record.respond_to?(:attribute_in_database)
-            record.attribute_in_database(:"#{property}") # Rails >= 5.1
-          else
-            record.send(value_was_method) # Rails <= 5.0
+          if record.respond_to?(:attribute_in_database) # Rails >= 5.1
+            record.attribute_in_database(:"#{property}")
+          else # Rails <= 5.0
+            record.send(value_was_method)
           end
         end
 
