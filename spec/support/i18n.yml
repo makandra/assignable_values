@@ -9,9 +9,16 @@ en:
 
   assignable_values:
     song:
+      format:
+        mp3: 'MP3-Codec'
+        wav: 'WAV-Codec'
       genre:
         pop: 'Pop music'
         rock: 'Rock music'
+      instruments:
+        drums: 'Drums'
+        guitar: 'Guitar'
+        piano: 'Piano'
       multi_genres:
         pop: 'Pop music'
         rock: 'Rock music'

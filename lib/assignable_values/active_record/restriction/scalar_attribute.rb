@@ -119,15 +119,34 @@ module AssignableValues
         end
 
         def value_was(record)
-          if record.respond_to?(:attribute_in_database)
-            record.attribute_in_database(:"#{property}") # Rails >= 5.1
-          else
-            record.send(value_was_method) # Rails <= 5.0
+          if record.respond_to?(:attribute_in_database) # Rails >= 5.1
+            if store_accessor_attribute?
+              accessor = record.attribute_in_database(:"#{store_identifier}").with_indifferent_access
+              accessor[property]
+            else
+              record.attribute_in_database(:"#{property}")
+            end
+          else # Rails <= 5.0
+            result = record.send(value_was_method)
+            result = result.with_indifferent_access[property] if store_accessor_attribute?
+            result
           end
         end
 
         def value_was_method
-          :"#{property}_was"
+          if store_accessor_attribute?
+            :"#{store_identifier}_was"
+          else
+            :"#{property}_was"
+          end
+        end
+
+        def store_accessor_attribute?
+          store_identifier.present?
+        end
+
+        def store_identifier
+          @model.stored_attributes.find { |_, attrs| attrs.include?(property.to_sym) }&.first
         end
 
       end
