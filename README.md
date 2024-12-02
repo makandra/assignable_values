@@ -1,5 +1,21 @@
-assignable_values - Enums on vitamins [![Tests](https://github.com/makandra/assignable_values/workflows/Tests/badge.svg)](https://github.com/makandra/assignable_values/actions)
-=====================================
+<p>
+  <a href="https://makandra.de/">
+    <picture>
+      <source media="(prefers-color-scheme: light)" srcset="media/makandra-with-bottom-margin.light.svg">
+      <source media="(prefers-color-scheme: dark)" srcset="media/makandra-with-bottom-margin.dark.svg">
+      <img align="right" width="25%" alt="makandra" src="media/makandra-with-bottom-margin.light.svg">
+    </picture>
+  </a>
+
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="media/logo.light.shapes.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="media/logo.dark.shapes.svg">
+    <img width="400" alt="assignable_values" role="heading" aria-level="1" src="media/logo.light.shapes.svg">
+  </picture>
+</p>
+
+[![Tests](https://github.com/makandra/assignable_values/workflows/Tests/badge.svg)](https://github.com/makandra/assignable_values/actions)
+
 
 `assignable_values` lets you restrict the values that can be assigned to attributes or associations of ActiveRecord models. You can think of it as enums where the list of allowed values is generated at runtime and the value is checked during validation.
 
