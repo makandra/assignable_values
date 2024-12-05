@@ -12,6 +12,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 -
 
+## 1.1.0 - 2024-12-05
+
+### Compatible changes
+
+- Add complete support for attributes that are available through store accessors
+
 ## 1.0.1 - 2024-08-27
 
 - Hook into railties correctly
