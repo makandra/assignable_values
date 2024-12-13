@@ -74,6 +74,9 @@ jobs:
           gemfile: Gemfile.6.1.pg
         - ruby: 3.3.0
           gemfile: Gemfile.7.1.pg
+        - ruby: 3.3.6
+          gemfile: Gemfile.8.0.pg
+
     env:
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
     steps:
