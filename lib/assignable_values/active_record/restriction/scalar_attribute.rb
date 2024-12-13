@@ -88,7 +88,7 @@ module AssignableValues
 
             unless multiple
               define_method :"humanized_#{restriction.property.to_s.pluralize}" do
-                ActiveSupport::Deprecation.warn("humanized_<value>s is deprecated, use humanized_assignable_<value>s instead", caller)
+                ActiveSupport::Deprecation.new.warn("humanized_<value>s is deprecated, use humanized_assignable_<value>s instead", caller)
                 restriction.humanized_assignable_values(self)
               end
             end
