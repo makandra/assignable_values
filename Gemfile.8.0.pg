@@ -1,0 +1,16 @@
+source 'https://rubygems.org'
+
+# Runtime dependencies
+gem 'activerecord', '~>8.0.0'
+gem 'i18n'
+gem 'pg'
+
+# Development dependencies
+gem 'rake'
+gem 'database_cleaner'
+gem 'rspec'
+gem 'rspec_candy'
+gem 'gemika', '~> 0.8.0'
+
+# Gem under test
+gem 'assignable_values', :path => '.'
