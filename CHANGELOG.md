@@ -12,6 +12,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 -
 
+## 1.1.1 - 2025-01-09
+
+### Compatible changes
+
+- Add Rails 8 support
+
 ## 1.1.0 - 2024-12-05
 
 ### Compatible changes
