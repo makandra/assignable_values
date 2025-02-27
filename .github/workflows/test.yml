@@ -1,15 +1,18 @@
 ---
 name: Tests
-'on':
+
+on:
   push:
     branches:
     - master
   pull_request:
     branches:
     - master
+
 jobs:
   test_mysql:
     runs-on: ubuntu-24.04
+
     services:
       mysql:
         image: mysql:5.7
@@ -22,6 +25,7 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+
     strategy:
       fail-fast: false
       matrix:
@@ -30,34 +34,40 @@ jobs:
           gemfile: Gemfile.5.0
         - ruby: 2.5.3
           gemfile: Gemfile.5.1
+
     env:
-      BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: "${{ matrix.ruby }}"
-    - name: Bundle
-      run: |
-        gem install bundler:2.1.4
-        bundle install --no-deployment
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
     - name: Setup databases
       run: |
         mysql -e 'create database IF NOT EXISTS assignable_values_test;' -u root --password=password -P 3306 -h 127.0.0.1
     - name: Run tests
       run: bundle exec rspec
+
   test_pg:
     runs-on: ubuntu-24.04
+
     services:
       postgres:
         image: postgres
         env:
           POSTGRES_PASSWORD: postgres
-        options: "--health-cmd pg_isready --health-interval 10s --health-timeout 5s
-          --health-retries 5"
+          POSTGRES_DB: assignable_values_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports:
         - 5432:5432
+
     strategy:
       fail-fast: false
       matrix:
@@ -78,21 +88,14 @@ jobs:
           gemfile: Gemfile.8.0.pg
 
     env:
-      BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install ruby
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: "${{ matrix.ruby }}"
-    - name: Setup database
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y postgresql-client
-        PGPASSWORD=postgres psql -c 'create database assignable_values_test;' -U postgres -p 5432 -h localhost
-    - name: Bundle
-      run: |
-        gem install bundler:2.1.4
-        bundle install --no-deployment
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
     - name: Run tests
       run: bundle exec rspec
