@@ -10,47 +10,6 @@ on:
     - master
 
 jobs:
-  test_mysql:
-    runs-on: ubuntu-24.04
-
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: password
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-        - ruby: 2.5.3
-          gemfile: Gemfile.5.0
-        - ruby: 2.5.3
-          gemfile: Gemfile.5.1
-
-    env:
-      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Install ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
-        bundler-cache: true
-    - name: Setup databases
-      run: |
-        mysql -e 'create database IF NOT EXISTS assignable_values_test;' -u root --password=password -P 3306 -h 127.0.0.1
-    - name: Run tests
-      run: bundle exec rspec
-
   test_pg:
     runs-on: ubuntu-24.04
 
@@ -72,10 +31,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - ruby: 2.5.3
-          gemfile: Gemfile.5.1.pg
-        - ruby: 2.5.3
-          gemfile: Gemfile.6.1.pg
         - ruby: 2.7.3
           gemfile: Gemfile.6.1.pg
         - ruby: 2.7.3
