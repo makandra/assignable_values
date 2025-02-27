@@ -9,7 +9,7 @@ name: Tests
     - master
 jobs:
   test_mysql:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     services:
       mysql:
         image: mysql:5.7
@@ -48,7 +48,7 @@ jobs:
     - name: Run tests
       run: bundle exec rspec
   test_pg:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres
