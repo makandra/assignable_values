@@ -21,7 +21,7 @@
 
 We carefully enhanced the core enum functionality with small tweaks that are useful for web forms, internationalized applications and common authorization patterns.
 
-`assignable_values` is tested with Rails 5.1, 6.1 and 7.1 on Ruby 2.5, 2.7 and 3.3.
+`assignable_values` is tested with Rails 6.1, 7.1 and 8.0 on Ruby 2.7 and 3.3.
 
 
 Restricting scalar attributes
@@ -443,7 +443,7 @@ Development
 
 There are tests in `spec`. We only accept PRs with tests. To run tests:
 
-- Install Ruby 2.3.8
+- Install Ruby 3.3.0
 - Create a local test database `assignable_values_test` in both MySQL and PostgreSQL (see
   `.github/workflows/test.yml` for commands to do so)
 - Copy `spec/support/database.sample.yml` to `spec/support/database.yml` and enter your local
@@ -459,7 +459,7 @@ We recommend to test large changes against multiple versions of Ruby and multipl
 
 Note that we have configured GitHub Actions to automatically run tests in all supported Ruby versions and dependency sets after each push. We will only merge pull requests after a green GitHub Actions run.
 
-I'm very eager to keep this gem leightweight and on topic. If you're unsure whether a change would make it into the gem, [talk to me beforehand](mailto:henning.koch@makandra.de).
+I'm very eager to keep this gem lightweight and on topic. If you're unsure whether a change would make it into the gem, [talk to me beforehand](mailto:henning.koch@makandra.de).
 
 
 Credits
