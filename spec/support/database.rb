@@ -10,7 +10,11 @@ database.rewrite_schema! do
     t.string :genre
     t.integer :year
     t.integer :duration
-    t.string :multi_genres, :array => true
+    if defined?(Mysql2)
+      t.string :multi_genres
+    else
+      t.string :multi_genres, :array => true
+    end
     t.json :metadata
   end
 
