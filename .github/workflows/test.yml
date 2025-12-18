@@ -30,14 +30,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - ruby: 2.7.3
-          gemfile: Gemfile.6.1.mysql2
-        - ruby: 2.7.3
+        - ruby: 3.3.6
           gemfile: Gemfile.7.1.mysql2
-        - ruby: 3.3.0
-          gemfile: Gemfile.6.1.mysql2
-        - ruby: 3.3.0
-          gemfile: Gemfile.7.1.mysql2
+        - ruby: 3.3.6
+          gemfile: Gemfile.7.2.mysql2
+        - ruby: 3.3.6
+          gemfile: Gemfile.8.0.mysql2
+        - ruby: 3.4.7
+          gemfile: Gemfile.8.1.mysql2
 
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
@@ -76,16 +76,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-        - ruby: 2.7.3
-          gemfile: Gemfile.6.1.pg
-        - ruby: 2.7.3
-          gemfile: Gemfile.7.1.pg
-        - ruby: 3.3.0
-          gemfile: Gemfile.6.1.pg
-        - ruby: 3.3.0
+        - ruby: 3.3.6
           gemfile: Gemfile.7.1.pg
         - ruby: 3.3.6
+          gemfile: Gemfile.7.2.pg
+        - ruby: 3.3.6
           gemfile: Gemfile.8.0.pg
+        - ruby: 3.4.7
+          gemfile: Gemfile.8.1.pg
 
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}

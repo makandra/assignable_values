@@ -443,7 +443,7 @@ Development
 
 There are tests in `spec`. We only accept PRs with tests. To run tests:
 
-- Install Ruby 3.3.0
+- Install Ruby 3.4.7
 - Create a local test database `assignable_values_test` in both MySQL and PostgreSQL (see
   `.github/workflows/test.yml` for commands to do so)
 - Copy `spec/support/database.sample.yml` to `spec/support/database.yml` and enter your local
