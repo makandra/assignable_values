@@ -12,6 +12,14 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 -
 
+## 1.2.0 - 2025-12-18
+
+### Breaking changes
+
+- Drop support for Ruby < 3.1, Rails < 7.
+- Removed legacy accessor methods `humanized_<value>s` (deprecated since 0.15.0). Use `humanized_assignable_<value>s` instead.
+- Removed `humanized` method on string values returned by assignable_values.
+
 ## 1.1.1 - 2025-01-09
 
 ### Compatible changes
