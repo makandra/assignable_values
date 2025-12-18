@@ -80,29 +80,10 @@ module AssignableValues
 
         def define_humanized_assignable_values_instance_method
           restriction = self
-          multiple = @options[:multiple]
           enhance_model do
             define_method :"humanized_assignable_#{restriction.property.to_s.pluralize}" do |*args|
               restriction.humanized_assignable_values(self, *args)
             end
-
-            unless multiple
-              define_method :"humanized_#{restriction.property.to_s.pluralize}" do
-                ActiveSupport::Deprecation.new.warn("humanized_<value>s is deprecated, use humanized_assignable_<value>s instead", caller)
-                restriction.humanized_assignable_values(self)
-              end
-            end
-          end
-        end
-
-        def decorate_values(values, klass)
-          restriction = self
-          values.collect do |value|
-            if value.is_a?(String)
-              humanization = restriction.humanized_value(klass, value)
-              value = HumanizableString.new(value, humanization)
-            end
-            value
           end
         end
 

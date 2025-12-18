@@ -7,7 +7,6 @@ module AssignableValues
 
         SUPPORTED_OPTIONS = [
           :allow_blank,
-          :decorate,
           :default,
           :include_old_value,
           :message,
@@ -73,11 +72,6 @@ module AssignableValues
             elsif !old_value.blank? && !current_values.include?(old_value)
               additional_assignable_values << old_value
             end
-          end
-
-          if options[:decorate]
-            current_values = decorate_values(current_values, record.class)
-            additional_assignable_values = decorate_values(additional_assignable_values, record.class)
           end
 
           if additional_assignable_values.present?
@@ -159,10 +153,6 @@ module AssignableValues
           raise NotImplementedError
         end
 
-        def decorate_values(values, _klass)
-          values
-        end
-
         def delegate?
           @options.has_key?(:through)
         end
@@ -242,7 +232,6 @@ module AssignableValues
             define_method assignable_values_method do |*args|
               # Ruby 1.8.7 does not support optional block arguments :(
               options = args.first || {}
-              options.merge!({:decorate => true})
               restriction.assignable_values(self, options)
             end
           end

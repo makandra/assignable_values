@@ -1269,58 +1269,6 @@ describe AssignableValues::ActiveRecord do
 
         end
 
-        context 'legacy methods for API compatibility' do
-
-          it 'should define a method that return pairs of values and their humanization' do
-            klass = Song.disposable_copy do
-              assignable_values_for :genre do
-                %w[pop rock]
-              end
-            end
-            deprecation_instance = instance_double(ActiveSupport::Deprecation)
-            allow(ActiveSupport::Deprecation).to receive(:new).and_return(deprecation_instance)
-            allow(deprecation_instance).to receive(:warn)
-
-            genres = klass.new.humanized_genres
-            genres.collect(&:humanized).should == ['Pop music', 'Rock music']
-
-            expect(deprecation_instance).to have_received(:warn).with(
-              "humanized_<value>s is deprecated, use humanized_assignable_<value>s instead",
-              instance_of(Array)
-            )
-          end
-
-          it "should define a method #humanized on assignable string values, which return up the value's' translation" do
-            klass = Song.disposable_copy do
-              assignable_values_for :genre do
-                %w[pop rock]
-              end
-            end
-            deprecation_instance = instance_double(ActiveSupport::Deprecation)
-            allow(ActiveSupport::Deprecation).to receive(:new).and_return(deprecation_instance)
-            allow(deprecation_instance).to receive(:warn)
-
-            klass.new.assignable_genres.collect(&:humanized).should == ['Pop music', 'Rock music']
-
-            expect(deprecation_instance).to have_received(:warn).with(
-              "assignable_<value>.humanized is deprecated, use humanized_assignable_<value>s.humanized instead",
-              instance_of(Array)
-            ).at_least(:once)
-          end
-
-          it 'should not define a method #humanized on values that are not strings' do
-            klass = Song.disposable_copy do
-              assignable_values_for :year do
-                [1999, 2000, 2001]
-              end
-            end
-            years = klass.new.assignable_years
-            years.should == [1999, 2000, 2001]
-            years.first.should_not respond_to(:humanized)
-          end
-
-        end
-
       end
 
       context 'with :through option' do
