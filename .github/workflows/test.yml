@@ -84,6 +84,8 @@ jobs:
           gemfile: Gemfile.8.0.pg
         - ruby: 3.4.7
           gemfile: Gemfile.8.1.pg
+        - ruby: 4.0.1
+          gemfile: Gemfile.8.1.pg
 
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}

@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'ostruct'
 
 def save_without_validation(record)
   if ActiveRecord::VERSION::MAJOR < 3
